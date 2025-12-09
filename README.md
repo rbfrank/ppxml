@@ -29,6 +29,7 @@ Requires Python 3.6 or higher (no external dependencies).
 
 The repository includes these files:
 
+```
 example/firebrands.xml    <- source file for all formats
 example/mystyles.css      <- CSS specific to firebrands HTML
 example/images/*          <- images for the firebrand project
@@ -39,9 +40,11 @@ ppxml.py               <- main Python program
 writers/               <- writers directory for text, HTML, etc.
 element-set.md         <- description of supported TEI XML elements
 HTML_TO_TEI_MAPPING.md <- reference for HTML to TEI conversion
+```
 
 ### converting TEI XML to other formats
 
+```bash
 cd example  # change to the firebrands example directory
 
 # generate the text file firebrands.txt
@@ -72,7 +75,6 @@ python3 ppxml.py output.xml output.html --css styles.css
 See `HTML_TO_TEI_MAPPING.md` for details on how HTML elements are mapped to TEI.
 
 **Note**: HTML to TEI conversion is best-effort. Manual review and editing of the output is recommended.
-```
 
 ## documentation
 
