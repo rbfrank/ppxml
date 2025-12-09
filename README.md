@@ -15,7 +15,8 @@ example/firebrands.xml    <- source file for all formats
 example/mystyles.css      <- CSS specific to firebrands HTML
 example/images/*          <- images for the firebrand project
 
-inline_css.py     <- (optional) to merge external CSS into generated HTML
+html_to_xml.py    <- (utility) convert HTML files to TEI XML format
+inline_css.py     <- (utility) merge external CSS into generated HTML
 ppxml.py          <- main Python program
 writers/          <- writers directory for text, HTML, etc.
 element-set.md    <- (optional) description of XML markup
@@ -32,6 +33,9 @@ python3 ../ppxml.py firebrands.xml firebrands.html --css mystyles.css
 
 # merge the external stylesheet into the HTML file (optional)
 python3 ../inline_css.py mystyles.css firebrands.html
+
+# convert an HTML file to TEI XML format (utility)
+python3 ../html_to_xml.py source.html output.xml --title "Book Title"
 ```
 
 ## further documentation

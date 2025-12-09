@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sample Book Chapter</title>
+  <style>
+    body { max-width: 40em; margin: 2em auto; padding: 0 1em; font-family: serif; line-height: 1.6; }
+    h1 { text-align: center; }
+    h2 { margin-top: 2em; }
+    .titlepage { text-align: center; margin: 2em 0; }
+    .titlepage p { margin: 0.5em 0; }
+    .italic { font-style: italic; }
+    .bold { font-weight: bold; }
+    blockquote { margin: 1em 2em; }
+    figure { margin: 2em 0; text-align: center; }
+    figure img { max-width: 100%; height: auto; }
+    figcaption { margin-top: 0.5em; font-style: italic; }
+    .poem { margin: 2em 0; }
+    .poem-title { text-align: center; font-weight: bold; margin-bottom: 1em; }
+    .stanza { margin-bottom: 1em; }
+    .line { margin: 0; }
+    .indent { margin-left: 2em; }
+    .indent2 { margin-left: 4em; }
+    .indent3 { margin-left: 6em; }
+    .milestone { text-align: center; margin: 2em 0; }
+    .milestone.stars::before { content: "*       *       *       *       *"; white-space: pre; }
+    .milestone.space { height: 2em; }
+    table { border-collapse: collapse; margin: 1em 0; }
+    td, th { border: 1px solid #ccc; padding: 0.5em; }
+  </style>
+</head>
+<body>
+<h1>Sample Book Chapter</h1>
+<h2>
+      Chapter One: The Beginning
+      </h2>
+<p>
+      This is a sample paragraph with
+      <i>
+      italic text
+      </i>
+      and
+      <b>
+      bold text
+      </b>
+      . It demonstrates how HTML is converted to TEI XML format.
+      </p>
+<p>
+      Here's another paragraph with a
+      <a href="https://example.com">
+      link
+      </a>
+      and some
+      <span class="underline">
+      underlined text
+      </span>
+      .
+      </p>
+<div class="milestone stars"></div>
+<div class="chapter">
+
+      A Section Within the Chapter
+      
+<p>
+      This section contains a list:
+      </p>
+<ul>
+  <li>
+      First item
+      </li>
+  <li>
+      Second item with
+      <i>
+      emphasis
+      </i>
+      </li>
+  <li>
+      Third item
+      </li>
+</ul>
+<blockquote><p>
+      This is a block quotation that should become a TEI quote element with block rendering.
+      </p></blockquote>
+<p>
+      Here's an image example:
+      </p>
+<figure>
+  <img src="images/sample.jpg" alt="A sample illustration">
+</figure>
+<div class="chapter">
+
+      Another Section
+      
+<p>
+      This demonstrates a table:
+      </p>
+<table>
+  <tr>
+    <th>
+      Name
+      </th>
+    <th>
+      Age
+      </th>
+  </tr>
+  <tr>
+    <td>
+      Alice
+      </td>
+    <td>
+      30
+      </td>
+  </tr>
+  <tr>
+    <td>
+      Bob
+      </td>
+    <td>
+      25
+      </td>
+  </tr>
+</table>
+<p>
+      The end of our sample chapter.
+      </p>
+</div>
+</div>
+</body>
+</html>
