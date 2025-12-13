@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Test Document for TEI Converter</title>
+      </titleStmt>
+      <publicationStmt>
+        <p>Test publication for bookcove.net TEI converter</p>
+      </publicationStmt>
+      <sourceDesc>
+        <p>Generated test file to exercise all supported TEI elements</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <front>
+      <div type="preface">
+        <head>Preface</head>
+        <p>This is a test document designed to exercise every element supported by the TEI converter. It includes examples of all structural elements, inline formatting, poetry, tables, figures, and special features.</p>
+        <p>The goal is to verify that each element renders correctly in both HTML and plain text output.</p>
+      </div>
+    </front>
+    
+    <body>
+      <div type="chapter" n="1">
+        <head>Chapter 1: Basic Text Elements</head>
+        
+        <p>This is a simple paragraph with no special formatting. It should appear as normal body text.</p>
+        
+        <p>This paragraph contains <hi rend="italic">italic text</hi>, <hi rend="bold">bold text</hi>, and <hi rend="underline">underlined text</hi>. It also has <hi rend="center">centered text</hi> to test the rendering attribute.</p>
+        
+        <p>Here is some <emph>emphasized text</emph> using the semantic emphasis element instead of hi.</p>
+        
+        <p>This paragraph includes a <foreign>phrase en français</foreign> to test foreign language markup.</p>
+        
+        <p>We can mention the title of a book like <title>Pride and Prejudice</title> within the text.</p>
+      </div>
+      
+      <div type="chapter" n="2">
+        <head>Chapter 2: Quotations</head>
+        
+        <p>This paragraph contains an inline quotation: <quote>To be or not to be</quote> said Hamlet.</p>
+        
+        <quote>This is a block quotation that stands alone, not within a paragraph. It should be rendered as a blockquote element in HTML and indented in plain text.</quote>
+        
+        <p>Block quotes are useful for longer excerpts from other works or important passages that need to stand out from the main text.</p>
+      </div>
+      
+      <div type="chapter" n="3">
+        <head>Chapter 3: Lists and Tables</head>
+        
+        <p>Here is an unordered list of items:</p>
+        
+        <list>
+          <item>First item in the list</item>
+          <item>Second item with <hi rend="italic">some italic text</hi></item>
+          <item>Third item that is longer and demonstrates how list items wrap when they contain more text than fits on a single line</item>
+          <item>Fourth and final item</item>
+        </list>
+        
+        <p>Now let's look at a simple table:</p>
+        
+        <table>
+          <row>
+            <cell role="label">Name</cell>
+            <cell role="label">Age</cell>
+            <cell role="label">City</cell>
+          </row>
+          <row>
+            <cell>Alice</cell>
+            <cell>28</cell>
+            <cell>Boston</cell>
+          </row>
+          <row>
+            <cell>Bob</cell>
+            <cell>34</cell>
+            <cell>Chicago</cell>
+          </row>
+          <row>
+            <cell>Carol</cell>
+            <cell>25</cell>
+            <cell>Denver</cell>
+          </row>
+        </table>
+      </div>
+      
+      <div type="chapter" n="4">
+        <head>Chapter 4: Poetry and Verse</head>
+        
+        <p>Poetry requires special formatting to preserve line breaks and indentation. Here's a simple poem:</p>
+        
+        <lg>
+          <head>A Short Poem</head>
+          <l>The sun sets slowly in the west,</l>
+          <l>While birds return to find their nest.</l>
+          <l>The day is done, the night draws near,</l>
+          <l>And peaceful silence fills the air.</l>
+        </lg>
+        
+        <p>Here's a poem with indented lines to show hierarchical structure:</p>
+        
+        <lg>
+          <head>Indented Verse</head>
+          <l>This is the first line, not indented</l>
+          <l rend="indent">This line has a single indent</l>
+          <l rend="indent2">This line has a double indent</l>
+          <l rend="indent3">This line has a triple indent</l>
+          <l rend="indent2">Back to double indent</l>
+          <l rend="indent">Back to single indent</l>
+          <l>And back to no indent</l>
+        </lg>
+        
+        <p>Here's a multi-stanza poem:</p>
+        
+        <lg>
+          <head>Multiple Stanzas</head>
+          <lg>
+            <l>First stanza, line one</l>
+            <l>First stanza, line two</l>
+            <l>First stanza, line three</l>
+          </lg>
+          <lg>
+            <l>Second stanza, line one</l>
+            <l>Second stanza, line two</l>
+            <l>Second stanza, line three</l>
+          </lg>
+          <lg>
+            <l>Third stanza, line one</l>
+            <l>Third stanza, line two</l>
+            <l>Third stanza, line three</l>
+          </lg>
+        </lg>
+      </div>
+      
+      <div type="chapter" n="5">
+        <head>Chapter 5: Figures and Images</head>
+        
+        <p>Figures can include images with captions and descriptions for accessibility.</p>
+        
+        <figure>
+          <graphic url="images/sample.jpg"/>
+          <head>A Sample Image</head>
+          <figDesc>This is a description of the image for accessibility purposes</figDesc>
+        </figure>
+        
+        <p>Figures can also have rendering attributes for styling:</p>
+        
+        <figure rend="half-width">
+          <graphic url="images/small-image.jpg"/>
+          <head>A Smaller Image</head>
+          <figDesc>An image with a custom CSS class applied</figDesc>
+        </figure>
+      </div>
+      
+      <div type="chapter" n="6">
+        <head>Chapter 6: Breaks and Milestones</head>
+        
+        <p>This chapter demonstrates various types of breaks and section markers.</p>
+        
+        <p>First paragraph before a thought break.</p>
+        
+        <milestone rend="stars"/>
+        
+        <p>Second paragraph after a star break. The milestone element creates a visual separator.</p>
+        
+        <milestone rend="space"/>
+        
+        <p>Third paragraph after a space break. This creates vertical spacing without decorative elements.</p>
+        
+        <p>Line breaks can appear within paragraphs.<lb/>This text appears after a line break but within the same paragraph element.</p>
+        
+        <pb n="42"/>
+        
+        <p>This paragraph appears after a page break marker (page 42). Page breaks are useful for maintaining references to original pagination.</p>
+      </div>
+      
+      <div type="chapter" n="7">
+        <head>Chapter 7: References and Notes</head>
+        
+        <p>This paragraph contains a reference or link: <ref target="https://www.example.com">click here for more information</ref>.</p>
+        
+        <p>Footnotes and annotations can be included inline<note>This is a note or footnote that provides additional context</note> within the text.</p>
+        
+        <p>Multiple notes can appear<note>First note</note> in the same<note>Second note</note> paragraph<note>Third note</note> as needed.</p>
+      </div>
+      
+      <div type="chapter" n="8">
+        <head>Chapter 8: Nested Divisions</head>
+        
+        <p>Chapters can contain nested sections with their own headings.</p>
+        
+        <div type="section">
+          <head>Section 8.1: First Section</head>
+          <p>This is content in the first nested section.</p>
+          <p>Nested sections help organize longer chapters into logical subsections.</p>
+        </div>
+        
+        <div type="section">
+          <head>Section 8.2: Second Section</head>
+          <p>This is content in the second nested section.</p>
+          <p>The converter should handle nested divisions correctly.</p>
+        </div>
+      </div>
+      
+      <div type="chapter" n="9">
+        <head>Chapter 9: Mixed Content</head>
+        
+        <p>This final chapter combines multiple elements to test complex scenarios.</p>
+        
+        <p>Here's a paragraph with <hi rend="bold">bold text</hi>, <hi rend="italic">italic text</hi>, a <quote>quotation</quote>, a reference to <title>A Famous Book</title>, and a <foreign>mot étranger</foreign> all in one sentence.</p>
+        
+        <lg>
+          <head>A Poem with Formatting</head>
+          <l>A line with <hi rend="italic">italic words</hi> embedded</l>
+          <l rend="indent">An indented line with <hi rend="bold">bold text</hi></l>
+          <l>A line mentioning <title>Paradise Lost</title></l>
+        </lg>
+        
+        <list>
+          <item>List item with <hi rend="bold">bold</hi> formatting</item>
+          <item>List item with a <quote>quotation</quote> inside</item>
+          <item>List item referencing <title>Another Book</title></item>
+        </list>
+        
+        <p>This demonstrates that inline elements can be nested within block elements throughout the document.</p>
+      </div>
+    </body>
+    
+    <back>
+      <div type="appendix">
+        <head>Appendix A: Additional Notes</head>
+        <p>This is back matter content, such as appendices, that appears after the main body of the text.</p>
+        <p>Back matter is useful for supplementary information that doesn't fit in the main narrative.</p>
+      </div>
+      
+      <div type="bibliography">
+        <head>Bibliography</head>
+        <p>This could contain bibliographic references or a list of works cited.</p>
+      </div>
+    </back>
+  </text>
+</TEI>
