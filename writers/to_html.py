@@ -2,6 +2,8 @@
 v15 to_html.py - Convert TEI to HTML
 """
 
+import os
+import glob
 from .common import TEI_NS, parse_tei, get_title
 
 def convert(tei_file, output_file, css_file=None):
@@ -11,10 +13,18 @@ def convert(tei_file, output_file, css_file=None):
     Args:
         tei_file: Path to TEI XML input file
         output_file: Path to HTML output file
-        css_file: Optional path to external CSS file (default: use embedded styles)
+        css_file: Optional path to external CSS file (default: auto-detect or use embedded styles)
     """
     doc = parse_tei(tei_file)
     title = get_title(doc)
+    
+    # Auto-detect CSS file in same directory if not specified
+    if css_file is None:
+        input_dir = os.path.dirname(os.path.abspath(tei_file))
+        css_files = glob.glob(os.path.join(input_dir, '*.css'))
+        if css_files:
+            css_file = css_files[0]  # Use first CSS file found
+            print(f"Auto-detected CSS file: {os.path.basename(css_file)}")
     
     # Start building HTML
     html_parts = []
@@ -26,8 +36,12 @@ def convert(tei_file, output_file, css_file=None):
     html_parts.append(f'  <title>{title}</title>')
     
     if css_file:
-        # Link to external CSS
-        html_parts.append(f'  <link rel="stylesheet" href="{css_file}">')
+        # Read and inline CSS
+        with open(css_file, 'r', encoding='utf-8') as f:
+            css_content = f.read()
+        html_parts.append('  <style>')
+        html_parts.append(css_content)
+        html_parts.append('  </style>')
     else:
         # Embed default styles
         html_parts.append('  <style>')
