@@ -29,6 +29,7 @@
 ### Poetry/Verse
 - `<lg>` - Line group (stanza, verse paragraph)
 - `<l>` - Line of verse
+  - Use `@rend` attribute for indentation: `rend="indent"`, `rend="indent2"`, or `rend="indent3"`
 
 ### Lists
 - `<list>` - List container
@@ -45,7 +46,7 @@
 
 ### Emphasis and Highlighting
 - `<hi>` - Highlighted text (general purpose)
-  - Use `@rend` attribute: `rend="italic"`, `rend="bold"`, `rend="underline"`, etc.
+  - Use `@rend` attribute: `rend="italic"`, `rend="bold"`, `rend="underline"`, `rend="center"`, etc.
 - `<emph>` - Semantic emphasis (optional alternative to `<hi>`)
 
 ### Quotations and References

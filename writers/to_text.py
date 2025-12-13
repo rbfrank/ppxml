@@ -24,6 +24,8 @@ def convert(tei_file, output_file, line_width=72):
         for div in front.findall('tei:div', TEI_NS):
             # Process all child elements in order
             for elem in div:
+                if not isinstance(elem.tag, str):
+                    continue
                 process_element(elem, output_lines, line_width)
         
         output_lines.append('')  # Extra blank after front
@@ -47,6 +49,9 @@ def convert(tei_file, output_file, line_width=72):
             
             # Process all child elements in order
             for elem in div:
+                # Skip comments and processing instructions
+                if not isinstance(elem.tag, str):
+                    continue
                 elem_tag = elem.tag.replace(f"{{{TEI_NS['tei']}}}", '')
                 if elem_tag != 'head':  # Skip head, already processed
                     process_element(elem, output_lines, line_width)
@@ -67,6 +72,8 @@ def convert(tei_file, output_file, line_width=72):
             
             # Process all child elements in order
             for elem in div:
+                if not isinstance(elem.tag, str):
+                    continue
                 elem_tag = elem.tag.replace(f"{{{TEI_NS['tei']}}}", '')
                 if elem_tag != 'head':
                     process_element(elem, output_lines, line_width)

@@ -87,6 +87,8 @@ def convert(tei_file, output_file, css_file=None):
             
             # Process all child elements
             for elem in div:
+                if not isinstance(elem.tag, str):
+                    continue
                 if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
                     html_parts.append(process_element(elem))
     
@@ -109,6 +111,8 @@ def convert(tei_file, output_file, css_file=None):
                 
                 # Process all child elements
                 for elem in div:
+                    if not isinstance(elem.tag, str):
+                        continue
                     if elem.tag != f"{{{TEI_NS['tei']}}}head":
                         html_parts.append(process_element(elem))
                 

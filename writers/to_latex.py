@@ -117,6 +117,8 @@ def process_div(div):
     
     # Process all child elements
     for elem in div:
+        if not isinstance(elem.tag, str):
+            continue
         elem_tag = elem.tag.replace(f"{{{TEI_NS['tei']}}}", '')
         if elem_tag != 'head':  # Skip head, already processed
             parts.append(process_element(elem))
