@@ -16,7 +16,7 @@ import os
 import argparse
 
 # Import converter modules
-from writers import to_html, to_text, to_epub, to_latex
+from writers import to_html, to_text
 
 def main():
     parser = argparse.ArgumentParser(
@@ -27,17 +27,13 @@ Examples:
   python tei_convert.py book.xml book.html
   python tei_convert.py book.xml book.html --css mystyles.css
   python tei_convert.py book.xml book.txt 72
-  python tei_convert.py book.xml book.epub --css epub-styles.css
-  python tei_convert.py book.xml book.pdf
-
-Note: PDF generation requires pdflatex (install texlive or miktex)
         '''
     )
     
     parser.add_argument('input', help='Input TEI XML file')
-    parser.add_argument('output', help='Output file (.html, .txt, .epub, .pdf, or .tex)')
+    parser.add_argument('output', help='Output file (.html or .txt)')
     parser.add_argument('width', nargs='?', type=int, help='Line width for text output (default: 72)')
-    parser.add_argument('--css', help='External CSS file for HTML/EPUB output')
+    parser.add_argument('--css', help='External CSS file for HTML output')
     
     args = parser.parse_args()
     
@@ -56,17 +52,8 @@ Note: PDF generation requires pdflatex (install texlive or miktex)
             width = args.width if args.width else 72
             to_text.convert(input_file, output_file, width)
         
-        elif output_file.endswith('.epub'):
-            to_epub.convert(input_file, output_file, css_file=args.css)
-        
-        elif output_file.endswith('.pdf'):
-            to_latex.convert(input_file, output_file, compile_pdf=True)
-        
-        elif output_file.endswith('.tex'):
-            to_latex.convert(input_file, output_file, compile_pdf=False)
-        
         else:
-            print("Error: Output file must have .html, .txt, .epub, .pdf, or .tex extension")
+            print("Error: Output file must have .html or .txt extension")
             sys.exit(1)
     
     except Exception as e:
