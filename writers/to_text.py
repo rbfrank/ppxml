@@ -102,6 +102,20 @@ def process_element(elem, output_lines, line_width):
             output_lines.append(wrapped)
             output_lines.append('')
     
+    elif elem_tag == 'list':
+        # Process list items
+        for item in elem.findall('tei:item', TEI_NS):
+            item_text = extract_text_with_emphasis(item).strip()
+            if item_text:
+                # Wrap with bullet point and hanging indent
+                wrapped = textwrap.fill(item_text, width=line_width,
+                                      initial_indent='  • ',
+                                      subsequent_indent='    ',
+                                      break_long_words=False,
+                                      break_on_hyphens=False)
+                output_lines.append(wrapped)
+        output_lines.append('')
+    
     elif elem_tag == 'figure':
         # Get caption from head element
         head = elem.find('tei:head', TEI_NS)
@@ -132,6 +146,31 @@ def process_element(elem, output_lines, line_width):
                                       break_on_hyphens=False)
                 output_lines.append(wrapped)
                 output_lines.append('')
+    
+    elif elem_tag == 'table':
+        # Simple table rendering for text
+        rows_data = []
+        for row in elem.findall('tei:row', TEI_NS):
+            cells = []
+            for cell in row.findall('tei:cell', TEI_NS):
+                cell_text = ''.join(cell.itertext()).strip()
+                cells.append(cell_text)
+            if cells:
+                rows_data.append(cells)
+        
+        if rows_data:
+            # Calculate column widths
+            num_cols = max(len(row) for row in rows_data)
+            col_widths = [0] * num_cols
+            for row in rows_data:
+                for i, cell in enumerate(row):
+                    col_widths[i] = max(col_widths[i], len(cell))
+            
+            # Render table
+            for row in rows_data:
+                row_text = '  '.join(cell.ljust(col_widths[i]) for i, cell in enumerate(row))
+                output_lines.append('  ' + row_text)
+        output_lines.append('')
     
     elif elem_tag == 'lg':
         # Poem/verse
