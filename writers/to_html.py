@@ -75,7 +75,9 @@ def convert(tei_file, output_file, css_file=None):
             css_content = f.read()
         html_parts.append('')
         html_parts.append('    /* Custom styles */')
-        html_parts.append(css_content)
+        # Indent each line of custom CSS by 4 spaces
+        for line in css_content.splitlines():
+            html_parts.append('    ' + line)
     
     html_parts.append('  </style>')
     
