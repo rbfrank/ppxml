@@ -53,7 +53,7 @@ def convert(tei_file, output_file, css_file=None):
     html_parts.append('    figure.center { margin: 2em auto; display: block; }')
     html_parts.append('    figure img { width: 100%; height: auto; }')
     html_parts.append('    figcaption { margin-top: 0.5em; font-style: italic; }')
-    html_parts.append('    .poem { margin: 2em 0; }')
+    html_parts.append('    .poem { margin: 1em 0; }')
     html_parts.append('    .poem.center { text-align: center; }')
     html_parts.append('    .poem.center .stanza { display: inline-block; text-align: left; }')
     html_parts.append('    .poem-title { text-align: center; font-weight: bold; margin-bottom: 1em; }')
@@ -213,26 +213,29 @@ def process_element(elem):
     
     elif tag == 'figure':
         # Process figure with graphic
-        rend = elem.get('rend', '')
-        if rend:
-            parts = [f'<figure class="{rend}">']
-        else:
-            parts = ['<figure>']
-        
         graphic = elem.find('tei:graphic', TEI_NS)
+        width = graphic.get('width', '') if graphic is not None else ''
+        rend = elem.get('rend', '')
+        
+        # Build opening figure tag with optional width and rend
+        parts = []
+        if width and rend:
+            parts.append(f'<figure class="{rend}" style="width: {width};">')
+        elif width:
+            parts.append(f'<figure style="width: {width};">')
+        elif rend:
+            parts.append(f'<figure class="{rend}">')
+        else:
+            parts.append('<figure>')
+        
         if graphic is not None:
             url = graphic.get('url', '')
-            width = graphic.get('width', '')
             
             # Get alt text from figDesc
             figdesc = elem.find('tei:figDesc', TEI_NS)
             alt_text = ''.join(figdesc.itertext()).strip() if figdesc is not None else ''
             
-            # Build img tag with optional width
-            if width:
-                parts.append(f'  <img src="{url}" alt="{alt_text}" style="width: {width};">')
-            else:
-                parts.append(f'  <img src="{url}" alt="{alt_text}">')
+            parts.append(f'  <img src="{url}" alt="{alt_text}">')
         
         # Add caption from head
         head = elem.find('tei:head', TEI_NS)
