@@ -89,7 +89,14 @@ def convert(tei_file, output_file, css_file=None):
     if front is not None:
         for div in front.findall('tei:div', TEI_NS):
             div_type = div.get('type', '')
-            if div_type:
+            div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
+            
+            # Build opening div tag
+            if div_id and div_type:
+                html_parts.append(f'<div id="{div_id}" class="{div_type}">')
+            elif div_id:
+                html_parts.append(f'<div id="{div_id}">')
+            elif div_type:
                 html_parts.append(f'<div class="{div_type}">')
             else:
                 html_parts.append('<div>')
@@ -105,8 +112,13 @@ def convert(tei_file, output_file, css_file=None):
         for div in body.findall('tei:div', TEI_NS):
             # Chapter/section heading
             head = div.find('tei:head', TEI_NS)
+            div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
+            
             if head is not None:
-                html_parts.append(f'<h2>{process_text_content(head)}</h2>')
+                if div_id:
+                    html_parts.append(f'<h2 id="{div_id}">{process_text_content(head)}</h2>')
+                else:
+                    html_parts.append(f'<h2>{process_text_content(head)}</h2>')
             
             # Process all child elements
             for elem in div:
@@ -122,15 +134,27 @@ def convert(tei_file, output_file, css_file=None):
             # Only process top-level divs in back
             if div.getparent().tag == f"{{{TEI_NS['tei']}}}back":
                 div_type = div.get('type', '')
-                if div_type:
+                div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
+                
+                # Build opening div tag
+                if div_id and div_type:
+                    html_parts.append(f'<div id="{div_id}" class="{div_type}">')
+                elif div_id:
+                    html_parts.append(f'<div id="{div_id}">')
+                elif div_type:
                     html_parts.append(f'<div class="{div_type}">')
                 else:
                     html_parts.append('<div>')
                 
                 # Heading
                 head = div.find('tei:head', TEI_NS)
+                div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
+                
                 if head is not None:
-                    html_parts.append(f'<h2>{process_text_content(head)}</h2>')
+                    if div_id:
+                        html_parts.append(f'<h2 id="{div_id}">{process_text_content(head)}</h2>')
+                    else:
+                        html_parts.append(f'<h2>{process_text_content(head)}</h2>')
                 
                 # Process all child elements
                 for elem in div:
@@ -155,7 +179,11 @@ def process_element(elem):
     tag = elem.tag.replace(f"{{{TEI_NS['tei']}}}", '')
     
     if tag == 'p':
-        return f'<p>{process_text_content(elem)}</p>'
+        rend = elem.get('rend', '')
+        if rend:
+            return f'<p class="{rend}">{process_text_content(elem)}</p>'
+        else:
+            return f'<p>{process_text_content(elem)}</p>'
     
     elif tag == 'quote':
         # Check if it's a block quote (standalone) or inline
@@ -252,8 +280,15 @@ def process_element(elem):
     elif tag == 'div':
         # Nested div - process recursively
         div_type = elem.get('type', '')
+        div_id = elem.get('{http://www.w3.org/XML/1998/namespace}id', '')
         parts = []
-        if div_type:
+        
+        # Build opening div tag
+        if div_id and div_type:
+            parts.append(f'<div id="{div_id}" class="{div_type}">')
+        elif div_id:
+            parts.append(f'<div id="{div_id}">')
+        elif div_type:
             parts.append(f'<div class="{div_type}">')
         else:
             parts.append('<div>')

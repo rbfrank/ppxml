@@ -22,6 +22,7 @@
 ### Document Divisions
 - `<div>` - Text division (chapters, sections, parts)
   - Use `@type` attribute: `type="chapter"`, `type="section"`, etc.
+  - Use `@xml:id` attribute for linking: `xml:id="ch1"` (creates anchor point for table of contents)
 - `<head>` - Heading for divisions
 - `<front>` - Front matter (preface, introduction, etc.)
 - `<back>` - Back matter (appendices, notes, etc.)
@@ -52,6 +53,8 @@
 ### Quotations and References
 - `<quote>` - Quotation (inline or block)
 - `<ref>` - Reference or link
+  - Use `@target` for URLs: `<ref target="https://example.com">link text</ref>`
+  - Use `@target` with `#` for internal links: `<ref target="#ch1">Chapter 1</ref>`
 - `<note>` - Note or annotation
 
 ### Special Text
