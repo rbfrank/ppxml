@@ -272,7 +272,11 @@ def process_text_content(elem):
     for child in elem:
         tag = child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
         
-        if tag == 'hi':
+        if tag == 'lb':
+            # Line break - self-closing tag
+            result += '<br>'
+        
+        elif tag == 'hi':
             rend = child.get('rend', 'italic')
             child_text = ''.join(child.itertext())
             if rend == 'italic':

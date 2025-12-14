@@ -306,8 +306,23 @@ def extract_text_with_emphasis(elem):
         tag = child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
         child_text = ''.join(child.itertext())
         
-        if tag in ['emph', 'hi']:
+        if tag == 'lb':
+            # Line break
+            result += '\n'
+        elif tag in ['emph', 'hi']:
             # Mark emphasis with underscores
+            result += f'_{child_text}_'
+        elif tag == 'note':
+            # Format notes in square brackets
+            result += f' [{child_text}]'
+        elif tag == 'ref':
+            # Just include the link text
+            result += child_text
+        elif tag == 'title':
+            # Mark titles with underscores like emphasis
+            result += f'_{child_text}_'
+        elif tag == 'foreign':
+            # Mark foreign text with underscores
             result += f'_{child_text}_'
         else:
             result += child_text
