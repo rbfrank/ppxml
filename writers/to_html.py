@@ -51,7 +51,7 @@ def convert(tei_file, output_file, css_file=None):
     html_parts.append('    figure.left { float: left; margin: 0 2em 1em 0; max-width: 50%; }')
     html_parts.append('    figure.right { float: right; margin: 0 0 1em 2em; max-width: 50%; }')
     html_parts.append('    figure.center { margin: 2em auto; display: block; }')
-    html_parts.append('    figure img { max-width: 100%; height: auto; }')
+    html_parts.append('    figure img { width: 80%; max-width: 100%; height: auto; }')
     html_parts.append('    figcaption { margin-top: 0.5em; font-style: italic; }')
     html_parts.append('    .poem { margin: 2em 0; }')
     html_parts.append('    .poem.center { text-align: center; }')
