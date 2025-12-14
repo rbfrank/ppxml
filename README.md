@@ -40,18 +40,24 @@ It also includes an `examples/` directory:
 
 ### converting TEI XML to other formats
 
+Here is a sample sequence to generate the text and HTML for the book "Emmy Lou, Her Book and Heart"
+
 ```bash
-cd example  # change to the firebrands example directory
-
-# generate the text file firebrands.txt
-python3 ../ppxml.py firebrands.xml firebrands.txt
-
-# generate the HTML
-# if there is an external stylesheet, it will be
-# appended to the internal CSS
-python3 ../ppxml.py firebrands.xml firebrands.html
-
+mkdir emmylou
+cd emmylou
+git clone git@github.com:rbfrank/ppxml.git
+cd ppxml/examples/emmylou
+python3 ../../ppxml.py emmylou.xml emmylou.txt
+python3 ../../ppxml.py emmylou.xml emmylou.html
 ```
+
+That will generate `emmylou.txt` and `emmylou.html` in the `ppxml/examples/emmylou/` directory.
+
+Note: Python must include the lxml libraries to run `ppxml.py`.
+
+Note: If you don't have `git` installed, visit `https://github.com/rbfrank/ppxml`, click on
+the white down arrow in the gree "Code" button, and download the zip file. Unzip that instead
+of cloning the repository.
 
 ## documentation
 
