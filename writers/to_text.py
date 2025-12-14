@@ -307,8 +307,13 @@ def process_element(elem, output_lines, line_width):
         for child in elem:
             process_element(child, output_lines, line_width)
 
-def extract_text_with_emphasis(elem):
-    """Extract text from element, marking emphasis with underscores."""
+def extract_text_with_emphasis(elem, quote_depth=0):
+    """Extract text from element, marking emphasis with underscores.
+    
+    Args:
+        elem: The element to process
+        quote_depth: Current nesting depth of quotes (0 = not in quote, 1 = outer, 2 = inner, etc.)
+    """
     result = ''
     
     if elem.text:
@@ -316,30 +321,42 @@ def extract_text_with_emphasis(elem):
     
     for child in elem:
         tag = child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
-        child_text = ''.join(child.itertext())
         
         if tag == 'lb':
             # Line break
             result += '\n'
         elif tag == 'quote':
-            # Inline quote - add smart quotes (U+201C and U+201D)
-            result += '\u201c' + child_text + '\u201d'
+            # Recursively process quote content at next depth level
+            child_text = extract_text_with_emphasis(child, quote_depth + 1)
+            # Alternate between double and single quotes
+            if quote_depth % 2 == 0:
+                # Even depth (0, 2, 4...): use double quotes
+                result += '\u201c' + child_text + '\u201d'
+            else:
+                # Odd depth (1, 3, 5...): use single quotes
+                result += '\u2018' + child_text + '\u2019'
         elif tag in ['emph', 'hi']:
+            child_text = ''.join(child.itertext())
             # Mark emphasis with underscores
             result += f'_{child_text}_'
         elif tag == 'note':
+            child_text = ''.join(child.itertext())
             # Format notes in square brackets
             result += f' [{child_text}]'
         elif tag == 'ref':
+            child_text = ''.join(child.itertext())
             # Just include the link text
             result += child_text
         elif tag == 'title':
+            child_text = ''.join(child.itertext())
             # Mark titles with underscores like emphasis
             result += f'_{child_text}_'
         elif tag == 'foreign':
+            child_text = ''.join(child.itertext())
             # Mark foreign text with underscores
             result += f'_{child_text}_'
         else:
+            child_text = ''.join(child.itertext())
             result += child_text
         
         if child.tail:

@@ -264,8 +264,13 @@ def process_element(elem):
         # Default: just extract text
         return process_text_content(elem)
 
-def process_text_content(elem):
-    """Extract text content from element, processing inline markup."""
+def process_text_content(elem, quote_depth=0):
+    """Extract text content from element, processing inline markup.
+    
+    Args:
+        elem: The element to process
+        quote_depth: Current nesting depth of quotes (0 = not in quote, 1 = outer, 2 = inner, etc.)
+    """
     result = ''
     
     if elem.text:
@@ -279,8 +284,15 @@ def process_text_content(elem):
             result += '<br>'
         
         elif tag == 'quote':
-            # Inline quotation - add smart quotes (U+201C and U+201D)
-            result += '\u201c' + ''.join(child.itertext()) + '\u201d'
+            # Recursively process quote content at next depth level
+            child_text = process_text_content(child, quote_depth + 1)
+            # Alternate between double and single quotes
+            if quote_depth % 2 == 0:
+                # Even depth (0, 2, 4...): use double quotes
+                result += '\u201c' + child_text + '\u201d'
+            else:
+                # Odd depth (1, 3, 5...): use single quotes
+                result += '\u2018' + child_text + '\u2019'
         
         elif tag == 'hi':
             rend = child.get('rend', 'italic')
