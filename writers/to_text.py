@@ -323,7 +323,7 @@ def extract_text_with_emphasis(elem):
             result += '\n'
         elif tag == 'quote':
             # Inline quote - add smart quotes (U+201C and U+201D)
-            result += f'"{child_text}"'
+            result += '\u201c' + child_text + '\u201d'
         elif tag in ['emph', 'hi']:
             # Mark emphasis with underscores
             result += f'_{child_text}_'

@@ -159,7 +159,7 @@ def process_element(elem):
         # Inline if parent is p, item, cell, or other inline containers
         if parent_tag in ['p', 'item', 'cell', 'note', 'head']:
             # Inline quote - add smart quotes (U+201C and U+201D)
-            return f'"{process_text_content(elem)}"'
+            return '\u201c' + process_text_content(elem) + '\u201d'
         else:
             return f'<blockquote><p>{process_text_content(elem)}</p></blockquote>'
     
@@ -280,7 +280,7 @@ def process_text_content(elem):
         
         elif tag == 'quote':
             # Inline quotation - add smart quotes (U+201C and U+201D)
-            result += f'"{"".join(child.itertext())}"'
+            result += '\u201c' + ''.join(child.itertext()) + '\u201d'
         
         elif tag == 'hi':
             rend = child.get('rend', 'italic')
