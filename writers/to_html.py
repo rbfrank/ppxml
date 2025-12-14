@@ -40,8 +40,6 @@ def convert(tei_file, output_file, css_file=None):
     html_parts.append('    body { max-width: 40em; margin: 2em auto; padding: 0 1em; font-family: serif; line-height: 1.6; }')
     html_parts.append('    h1 { text-align: center; }')
     html_parts.append('    h2 { margin-top: 2em; }')
-    html_parts.append('    .titlepage { text-align: center; margin: 2em 0; }')
-    html_parts.append('    .titlepage p { margin: 0.5em 0; }')
     html_parts.append('    .italic { font-style: italic; }')
     html_parts.append('    .bold { font-weight: bold; }')
     html_parts.append('    .underline { text-decoration: underline; }')
