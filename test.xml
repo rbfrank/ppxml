@@ -100,6 +100,17 @@
           <l>And peaceful silence fills the air.</l>
         </lg>
         
+
+        <lg>
+          <l>This is the first line, not indented</l>
+          <l rend="indent">This line has a single indent</l>
+          <l rend="indent2">This line has a double indent</l>
+          <l rend="indent3">This line has a triple indent</l>
+          <l rend="indent2">Back to double indent</l>
+          <l rend="indent">Back to single indent</l>
+          <l>And back to no indent</l>
+        </lg>
+
         <p>Here's a poem with a centered dedication line and indented lines:</p>
         
         <lg>
@@ -228,7 +239,227 @@
         </list>
         
         <p>This demonstrates that inline elements can be nested within block elements throughout the document.</p>
+      
+        <p><quote>She said he called her a <quote>tart</quote> and then laughed.</quote></p>
       </div>
+
+      <div type="chapter" n="10">
+  
+<p>Miss Clara sat erect. The Primer Class held its breath. It always held
+its breath when Miss Clara sat erect. Emmy Lou held tightly to her desk
+besides. She wondered what it was all about.</p>
+
+<p>Then Miss Clara spoke. Her accents cut the silence.</p>
+
+<p><quote>Billy Traver!</quote></p>
+
+<p>Billy Traver stood forth. It was the little boy.</p>
+
+<p><quote>Since you seem pleased to occupy yourself with the little girls, Billy,
+<i>go to the pegs</i>!</quote></p>
+
+<p>Emmy Lou trembled. <quote>Go to the pegs!</quote> What unknown, inquisitorial terrors
+lay behind those dread, laconic words, Emmy Lou knew not.</p>
+
+<p>She could only sit and watch the little boy turn and stump back down the
+aisle and around the room to where along the wall hung rows of feminine
+apparel.</p>
+
+<p>Here he stopped and scanned the line. Then he paused before a hat. It
+was a round little hat with silky nap and a curling brim. It had
+rosettes to keep the ears warm and ribbon that tied beneath the chin. It
+was Emmy Lou’s hat. Aunt Cordelia had cautioned her to care concerning
+it.</p>
+
+<p>The little boy took it down. There seemed to be no doubt in his mind as
+to what Miss Clara meant. But then he had been in the Primer Class from
+the beginning.</p>
+
+<figure rend="left">
+  <graphic url="images/img-019.jpg"/>
+  <head><quote>Emmy Lou did not laugh. She made room for Billy.</quote></head>
+  <figDesc>Emmy Lou making room for Billy.</figDesc>
+</figure>
+
+<p>Having taken the hat down he proceeded to put it upon his own shock
+head. His face wore its broad and constant smile. One would have said
+the little boy was enjoying the affair. As he put the hat on, the
+sixty-nine laughed. The seventieth did not. It was her hat, and besides,
+she did not understand.</p>
+
+<p>Miss Clara still erect spoke again: <quote>And now, since you are a little
+girl, get your book, Billy, and move over with the girls.</quote></p>
+
+<p>Nor did Emmy Lou understand why, when Billy, having gathered his
+belongings together, moved across the aisle and sat down with her, the
+sixty-nine laughed again. Emmy Lou did not laugh. She made room for
+Billy.</p>
+
+<p>Nor did she understand when Billy treated her to a slow and
+surreptitious wink, his freckled countenance grinning beneath the
+rosetted hat. It never could have occurred to Emmy Lou that Billy had
+laid his cunning plans to this very end. Emmy Lou understood nothing of
+all this. She only pitied Billy. And presently, when public attention
+had become diverted, she proffered him the hospitality of a grimy little
+slate rag. When Billy returned the rag there was something in
+it&#8212;something wrapped in a beautiful, glazed, shining bronze paper. It
+was a candy kiss. One paid five cents for six of them at the drug-store.</p>
+
+<p>On the road home, Emmy Lou ate the candy. The beautiful, shiny paper she
+put in her Primer. The slip of paper that she found within she carried
+to Aunt Cordelia. It was sticky and it was smeared. But it had reading
+on it.</p>
+
+<p><quote>But this is printing,</quote> said Aunt Cordelia;
+<quote>can’t you read it?</quote></p>
+
+<p>Emmy Lou shook her head.</p>
+
+<p><quote>Try,</quote> said Aunt Katie.</p>
+
+<p><quote>The easy words,</quote> said Aunt Louise.</p>
+
+<p>But Emmy Lou, remembering c-a-t, Pussy, shook her head.</p>
+
+<figure rend="center">
+  <graphic url="images/img-033.jpg"/>
+  <head><quote>Guiding a squeaking pencil across a protesting slate.</quote></head>
+  <figDesc>Emmy Lou using her slate</figDesc>
+</figure>
+
+<p>Aunt Cordelia looked troubled. <quote>She certainly isn’t catching up,</quote> said
+Aunt Cordelia. Then she read from the slip of paper:</p>
+
+<lg>
+<l>“Oh, woman, woman, thou wert made</l>
+<l>The peace of Adam to invade.”</l>
+</lg>
+
+<p>The aunties laughed, but Emmy Lou put it away with the glazed paper in
+her Primer. It meant quite as much to her as did the reading in that
+Primer: Cat, a cat, the cat. The bat, the mat, a rat. It was the jingle
+to both that appealed to Emmy Lou.</p>
+
+<p>About this time rumors began to reach Emmy Lou. She heard that it was
+February, and that wonderful things were peculiar to the Fourteenth. At
+recess the little girls locked arms and talked Valentines. The echoes
+reached Emmy Lou.</p>
+
+<p>The valentines must come from a little boy, or it wasn’t the real thing.
+And to get no valentine was a dreadful&#8212;dreadful thing. And even the
+timidest of the sheep began to cast eyes across at the goats.</p>
+
+<p>Emmy Lou wondered if she would get a valentine. And if not, how was she
+to survive the contumely and shame?</p>
+
+<p>You must never, never breathe to a living soul what was on your
+valentine. To tell even your best and truest little girl friend was to
+prove faithless to the little boy sending the valentine. These things
+reached Emmy Lou.</p>
+
+<p>Not for the world would she tell. Emmy Lou was sure of that, so grateful
+did she feel she would be to anyone sending her a valentine.</p>
+
+<p>And in doubt and wretchedness did she wend her way to school on the
+Fourteenth Day of February. The drug-store window was full of
+valentines. But Emmy Lou crossed the street. She did not want to see
+them. She knew the little girls would ask her if she had gotten a
+valentine. And she would have to say, No.</p>
+
+<p>She was early. The big, empty room echoed back her footsteps as she went
+to her desk to lay down book and slate before taking off her wraps. Nor
+did Emmy Lou dream the eye of the little boy peeped through the crack of
+the door from Miss Clara’s dressing-room.</p>
+
+<p>Emmy Lou’s hat and jacket were forgotten. On her desk lay something
+square and white. It was an envelope. It was a beautiful envelope, all
+over flowers and scrolls.</p>
+
+<p>Emmy Lou knew it. It was a valentine. Her cheeks grew pink.</p>
+
+<p>She took it out. It was blue. And it was gold. And it had reading on it.</p>
+
+<p>Emmy Lou’s heart sank. She could not read the reading. The door opened.
+Some little girls came in. Emmy Lou hid her valentine in her book, for
+since you must not&#8212;she would never show her valentine&#8212;never.</p>
+
+<p>The little girls wanted to know if she had gotten a valentine, and Emmy
+Lou said, Yes, and her cheeks were pink with the joy of being able to
+say it.</p>
+
+<p>Through the day, she took peeps between the covers of her Primer, but no
+one else might see it.</p>
+
+<p>It rested heavy on Emmy Lou’s heart, however, that there was reading on
+it. She studied it surreptitiously. The reading was made up of letters.
+It was the first time Emmy Lou had thought about that. She knew some of
+the letters. She would ask someone the letters she did not know by
+pointing them out on the chart at recess. Emmy Lou was learning. It was
+the first time since she came to school.</p>
+
+<p>But what did the letters make? She wondered, after recess, studying the
+valentine again.</p>
+
+<p>Then she went home. She followed Aunt Cordelia about. Aunt Cordelia was
+busy.</p>
+
+<figure rend="right">
+  <graphic url="images/img-025.jpg"/>
+  <head><quote>She sought the house-boy.</quote></head>
+  <figDesc>Emmy Lou seeking the house-boy</figDesc>
+</figure>
+
+<p><quote>What does it read?</quote> asked Emmy Lou.</p>
+
+<p>Aunt Cordelia listened.</p>
+
+<p><quote>B,</quote> said Emmy Lou, <quote>and e?</quote></p>
+
+<p><quote>Be,</quote> said Aunt Cordelia.</p>
+
+<p>If B was Be, it was strange that B and e were Be. But many things were
+strange.</p>
+
+<p>Emmy Lou accepted them all on faith.</p>
+
+<p>After dinner she approached Aunt Katie.</p>
+
+<p><quote>What does it read?</quote> asked Emmy Lou, <quote>m and y?</quote></p>
+
+<p><quote>My,</quote> said Aunt Katie.</p>
+
+<p>The rest was harder. She could not remember the letters, and had to copy
+them off on her slate. Then she sought Tom, the house-boy. Tom was out
+at the gate talking to another house-boy. She waited until the other boy
+was gone.</p>
+
+<p><quote>What does it read?</quote> asked Emmy Lou, and she told the letters off the
+slate. It took Tom some time, but finally he told her.</p>
+
+<p>Just then a little girl came along. She was a first-section little girl,
+and at school she never noticed Emmy Lou.</p>
+
+<p>Now she was alone, so she stopped.</p>
+
+<p><quote>Get any valentines?</quote></p>
+
+<p><quote>Yes,</quote> said Emmy Lou. Then moved to confidence by the little girl’s
+friendliness, she added, <quote>It has reading on it.</quote></p>
+
+<p><quote>Pooh,</quote> said the little girl, <quote>they all have that. My mamma’s been
+reading the long verses inside to me.</quote></p>
+
+<p><quote>Can you show them&#8212;valentines?</quote> asked Emmy Lou.</p>
+
+<p><quote>Of course, to grown-up people,</quote> said the little girl.</p>
+
+<p>The gas was lit when Emmy Lou came in. Uncle Charlie was there, and the
+aunties, sitting around, reading.</p>
+
+<p><quote>I got a valentine,</quote> said Emmy Lou.</p>
+
+      </div>
+
     </body>
     
     <back>
