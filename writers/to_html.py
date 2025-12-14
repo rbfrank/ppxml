@@ -101,8 +101,20 @@ def convert(tei_file, output_file, css_file=None):
             else:
                 html_parts.append('<div>')
             
+            # Process heading if present
+            head = div.find('tei:head', TEI_NS)
+            if head is not None:
+                if div_id:
+                    html_parts.append(f'<h2 id="{div_id}">{process_text_content(head)}</h2>')
+                else:
+                    html_parts.append(f'<h2>{process_text_content(head)}</h2>')
+            
+            # Process all other child elements
             for elem in div:
-                html_parts.append(process_element(elem))
+                if not isinstance(elem.tag, str):
+                    continue
+                if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
+                    html_parts.append(process_element(elem))
             
             html_parts.append('</div>')
     

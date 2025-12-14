@@ -22,11 +22,20 @@ def convert(tei_file, output_file, line_width=72):
     front = doc.find('.//tei:front', TEI_NS)
     if front is not None:
         for div in front.findall('tei:div', TEI_NS):
-            # Process all child elements in order
+            # Process heading if present
+            head = div.find('tei:head', TEI_NS)
+            if head is not None:
+                heading_text = ''.join(head.itertext()).strip()
+                output_lines.append(heading_text)
+                output_lines.append('=' * len(heading_text))
+                output_lines.append('')
+            
+            # Process all other child elements in order
             for elem in div:
                 if not isinstance(elem.tag, str):
                     continue
-                process_element(elem, output_lines, line_width)
+                if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
+                    process_element(elem, output_lines, line_width)
         
         output_lines.append('')  # Extra blank after front
     
