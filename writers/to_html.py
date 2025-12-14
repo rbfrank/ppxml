@@ -156,8 +156,10 @@ def process_element(elem):
     elif tag == 'quote':
         # Check if it's a block quote (standalone) or inline
         parent_tag = elem.getparent().tag.replace(f"{{{TEI_NS['tei']}}}", '')
-        if parent_tag == 'p':
-            return f'<q>{process_text_content(elem)}</q>'
+        # Inline if parent is p, item, cell, or other inline containers
+        if parent_tag in ['p', 'item', 'cell', 'note', 'head']:
+            # Inline quote - add smart quotes (U+201C and U+201D)
+            return f'"{process_text_content(elem)}"'
         else:
             return f'<blockquote><p>{process_text_content(elem)}</p></blockquote>'
     
@@ -275,6 +277,10 @@ def process_text_content(elem):
         if tag == 'lb':
             # Line break - self-closing tag
             result += '<br>'
+        
+        elif tag == 'quote':
+            # Inline quotation - add smart quotes (U+201C and U+201D)
+            result += f'"{"".join(child.itertext())}"'
         
         elif tag == 'hi':
             rend = child.get('rend', 'italic')

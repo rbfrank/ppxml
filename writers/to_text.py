@@ -96,10 +96,22 @@ def process_element(elem, output_lines, line_width):
     if elem_tag == 'p':
         text = extract_text_with_emphasis(elem).strip()
         if text:
-            wrapped = textwrap.fill(text, width=line_width,
-                                  break_long_words=False,
-                                  break_on_hyphens=False)
-            output_lines.append(wrapped)
+            # Check if there are line breaks in the text
+            if '\n' in text:
+                # Split on line breaks and wrap each part separately
+                parts = text.split('\n')
+                for part in parts:
+                    if part.strip():
+                        wrapped = textwrap.fill(part.strip(), width=line_width,
+                                              break_long_words=False,
+                                              break_on_hyphens=False)
+                        output_lines.append(wrapped)
+            else:
+                # Normal paragraph wrapping
+                wrapped = textwrap.fill(text, width=line_width,
+                                      break_long_words=False,
+                                      break_on_hyphens=False)
+                output_lines.append(wrapped)
             output_lines.append('')
     
     elif elem_tag == 'list':
@@ -309,6 +321,9 @@ def extract_text_with_emphasis(elem):
         if tag == 'lb':
             # Line break
             result += '\n'
+        elif tag == 'quote':
+            # Inline quote - add smart quotes (U+201C and U+201D)
+            result += f'"{child_text}"'
         elif tag in ['emph', 'hi']:
             # Mark emphasis with underscores
             result += f'_{child_text}_'
