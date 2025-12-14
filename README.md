@@ -38,6 +38,7 @@ It also includes an `examples/` directory:
 
 - `firebrand/` a simple starting example with basic markup
 - `emmylou/` a much more complicated example demonstrating markup for floated images, title page, a Table of Contents, poetry, and other more advanced constructions.
+- `test/` a rudimentary test file containing most of the supported TEI/XML tags in `ppxml`
 
 ### converting TEI XML to other formats
 
