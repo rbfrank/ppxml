@@ -20,10 +20,23 @@
         <p>This is a test document designed to exercise every element supported by the TEI converter. It includes examples of all structural elements, inline formatting, poetry, tables, figures, and special features.</p>
         <p>The goal is to verify that each element renders correctly in both HTML and plain text output.</p>
       </div>
+
+
+  <div type="toc" xml:id="toc">
+    <head>Table of Contents</head>
+    <list>
+      <item><ref target="#ch1">Chapter 1: Basic Text Elements</ref></item>
+      <item><ref target="#ch4">Chapter 4: Poetry and Verse</ref></item>
+      <item><ref target="#ch10">Chapter 10: Floated Illustrations</ref></item>
+    </list>
+  </div>
+
+
+
     </front>
     
     <body>
-      <div type="chapter" n="1">
+      <div type="chapter" n="1" xml:id="ch1">
         <head>Chapter 1: Basic Text Elements</head>
         
         <p>This is a simple paragraph with no special formatting. It should appear as normal body text.</p>
@@ -87,7 +100,7 @@
         </table>
       </div>
       
-      <div type="chapter" n="4">
+      <div type="chapter" n="4" xml:id="ch4">
         <head>Chapter 4: Poetry and Verse</head>
         
         <p>Poetry requires special formatting to preserve line breaks and indentation. Here's a simple poem:</p>
@@ -243,7 +256,7 @@
         <p><quote>She said he called her a <quote>tart</quote> and then laughed.</quote></p>
       </div>
 
-      <div type="chapter" n="10">
+      <div type="chapter" n="10" xml:id="ch10">
               <head>Chapter 10: Floated Illustrations</head>
               
 <p>Miss Clara sat erect. The Primer Class held its breath. It always held
@@ -323,7 +336,7 @@ on it.</p>
 <p>But Emmy Lou, remembering c-a-t, Pussy, shook her head.</p>
 
 <figure rend="center">
-  <graphic url="images/img-033.jpg"/>
+  <graphic url="images/img-033.jpg" width="70%"/>
   <head><quote>Guiding a squeaking pencil across a protesting slate.</quote></head>
   <figDesc>Emmy Lou using her slate</figDesc>
 </figure>
@@ -336,7 +349,7 @@ Aunt Cordelia. Then she read from the slip of paper:</p>
 <l>The peace of Adam to invade.”</l>
 </lg>
 
-<p>The aunties laughed, but Emmy Lou put it away with the glazed paper in
+<p rend='no-indent'>(not indented) The aunties laughed, but Emmy Lou put it away with the glazed paper in
 her Primer. It meant quite as much to her as did the reading in that
 Primer: Cat, a cat, the cat. The bat, the mat, a rat. It was the jingle
 to both that appealed to Emmy Lou.</p>
