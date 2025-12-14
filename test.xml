@@ -28,8 +28,10 @@
         
         <p>This is a simple paragraph with no special formatting. It should appear as normal body text.</p>
         
-        <p>This paragraph contains <hi rend="italic">italic text</hi>, <hi rend="bold">bold text</hi>, and <hi rend="underline">underlined text</hi>. It also has <hi rend="center">centered text</hi> to test the rendering attribute.</p>
+        <p>This paragraph contains <hi rend="italic">italic text</hi>, <hi rend="bold">bold text</hi>, and <hi rend="underline">underlined text</hi> to test inline formatting.</p>
         
+        <p>Here is some <hi rend="small-caps">Small Caps Text</hi> to demonstrate that feature.</p>
+
         <p>Here is some <emph>emphasized text</emph> using the semantic emphasis element instead of hi.</p>
         
         <p>This paragraph includes a <foreign>phrase en français</foreign> to test foreign language markup.</p>
@@ -98,10 +100,10 @@
           <l>And peaceful silence fills the air.</l>
         </lg>
         
-        <p>Here's a poem with indented lines to show hierarchical structure:</p>
+        <p>Here's a poem with a centered dedication line and indented lines:</p>
         
         <lg>
-          <head>Indented Verse</head>
+          <l rend="center">For my beloved</l>
           <l>This is the first line, not indented</l>
           <l rend="indent">This line has a single indent</l>
           <l rend="indent2">This line has a double indent</l>
