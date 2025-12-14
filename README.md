@@ -19,7 +19,7 @@ git clone https://github.com/rbfrank/ppxml.git
 cd ppxml
 ```
 
-Requires Python 3.6 or higher (with lxml libraries).
+Requires Python 3.6 or higher (with lxml library).
 
 ## usage
 
@@ -28,14 +28,16 @@ Requires Python 3.6 or higher (with lxml libraries).
 The repository includes these files:
 
 ```
-example/firebrands.xml    <- source file for all formats
-example/mystyles.css      <- CSS specific to firebrands HTML
-example/images/*          <- images for the firebrand project
-
 ppxml.py                  <- main Python program
 writers/                  <- writers directory for text, HTML, etc.
 element-set.md            <- description of supported TEI XML elements
 ```
+
+It also includes an `examples/` directory:
+
+
+- `firebrand/` a simple starting example with basic markup
+- `emmylou/` a much more complicated example demonstrating markup for floated images, title page, a Table of Contents, poetry, and other more advanced constructions.
 
 ### converting TEI XML to other formats
 
@@ -54,7 +56,6 @@ python3 ../ppxml.py firebrands.xml firebrands.html
 ## documentation
 
 - `element-set.md` - Complete list of supported TEI XML elements
-- `HTML_TO_TEI_MAPPING.md` - HTML to TEI conversion reference
 - https://bookcove.net - Additional documentation and resources
 
 ## supported output formats
@@ -66,8 +67,4 @@ python3 ../ppxml.py firebrands.xml firebrands.html
 
 - **LaTeX** - For PDF generation (requires pdflatex)
 - **EPUB3** - Electronic book format
-
-## license
-
-See `LICENSE` file for details.
 
