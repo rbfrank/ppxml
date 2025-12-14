@@ -135,46 +135,106 @@ def process_element(elem, output_lines, line_width):
     
     elif elem_tag == 'lg':
         # Poem/verse
+        rend = elem.get('rend', '')
+        
         head = elem.find('tei:head', TEI_NS)
         if head is not None:
             title = ''.join(head.itertext()).strip()
             if title:
-                output_lines.append('    ' + title.upper())
+                if rend == 'center':
+                    # Center the title
+                    padding = (line_width - len(title)) // 2
+                    output_lines.append(' ' * padding + title.upper())
+                else:
+                    output_lines.append('    ' + title.upper())
                 output_lines.append('')
         
         # Check for nested stanzas
         nested_lg = elem.findall('tei:lg', TEI_NS)
         if nested_lg:
             for stanza in nested_lg:
+                stanza_rend = stanza.get('rend', '')
+                lines_to_add = []
+                line_rends = []  # Track which lines are centered
+                
                 for line in stanza.findall('tei:l', TEI_NS):
                     line_text = extract_text_with_emphasis(line).strip()
-                    rend = line.get('rend', '')
-                    # Base indent of 4 spaces, plus additional for rend
-                    if rend == 'indent':
-                        line_text = '      ' + line_text  # 4 + 2
-                    elif rend == 'indent2':
-                        line_text = '        ' + line_text  # 4 + 4
-                    elif rend == 'indent3':
-                        line_text = '          ' + line_text  # 4 + 6
-                    else:
-                        line_text = '    ' + line_text  # Base 4 spaces
-                    output_lines.append(line_text)
+                    line_rend = line.get('rend', '')
+                    line_rends.append(line_rend)
+                    
+                    # Apply line-level indentation
+                    if line_rend == 'center':
+                        # Center individual line - already complete, no base indent needed
+                        padding = (line_width - visual_length(line_text)) // 2
+                        line_text = ' ' * padding + line_text
+                    elif line_rend == 'indent':
+                        line_text = '  ' + line_text  # 2 spaces for indent
+                    elif line_rend == 'indent2':
+                        line_text = '    ' + line_text  # 4 spaces
+                    elif line_rend == 'indent3':
+                        line_text = '      ' + line_text  # 6 spaces
+                    
+                    lines_to_add.append(line_text)
+                
+                # If stanza has center rend, center the block
+                if stanza_rend == 'center':
+                    # Find longest line (visual length)
+                    max_len = max(visual_length(l) for l in lines_to_add) if lines_to_add else 0
+                    # Calculate padding to center the block
+                    block_padding = (line_width - max_len) // 2
+                    # Add padding to all lines
+                    for line_text in lines_to_add:
+                        output_lines.append(' ' * block_padding + line_text)
+                else:
+                    # Normal poem indentation (4 spaces base) - but not for individually centered lines
+                    for i, line_text in enumerate(lines_to_add):
+                        if line_rends[i] == 'center':
+                            output_lines.append(line_text)  # Already centered, no base indent
+                        else:
+                            output_lines.append('    ' + line_text)
+                
                 output_lines.append('')  # Blank line between stanzas
         else:
             # Single stanza
+            lines_to_add = []
+            line_rends = []  # Track which lines are centered
+            
             for line in elem.findall('tei:l', TEI_NS):
                 line_text = extract_text_with_emphasis(line).strip()
-                rend = line.get('rend', '')
-                # Base indent of 4 spaces, plus additional for rend
-                if rend == 'indent':
-                    line_text = '      ' + line_text  # 4 + 2
-                elif rend == 'indent2':
-                    line_text = '        ' + line_text  # 4 + 4
-                elif rend == 'indent3':
-                    line_text = '          ' + line_text  # 4 + 6
-                else:
-                    line_text = '    ' + line_text  # Base 4 spaces
-                output_lines.append(line_text)
+                line_rend = line.get('rend', '')
+                line_rends.append(line_rend)
+                
+                # Apply line-level indentation
+                if line_rend == 'center':
+                    # Center individual line - already complete, no base indent needed
+                    padding = (line_width - visual_length(line_text)) // 2
+                    line_text = ' ' * padding + line_text
+                elif line_rend == 'indent':
+                    line_text = '  ' + line_text  # 2 spaces
+                elif line_rend == 'indent2':
+                    line_text = '    ' + line_text  # 4 spaces
+                elif line_rend == 'indent3':
+                    line_text = '      ' + line_text  # 6 spaces
+                
+                lines_to_add.append(line_text)
+            
+            # If lg has center rend, center the block
+            if rend == 'center':
+                # Find longest line (visual length)
+                max_len = max(visual_length(l) for l in lines_to_add) if lines_to_add else 0
+                # Calculate padding to center the block
+                block_padding = (line_width - max_len) // 2
+                # Add padding to all lines
+                for line_text in lines_to_add:
+                    output_lines.append(' ' * block_padding + line_text)
+            else:
+                # Normal poem indentation (4 spaces base) - but not for individually centered lines
+                for i, line_text in enumerate(lines_to_add):
+                    if line_rends[i] == 'center':
+                        output_lines.append(line_text)  # Already centered, no base indent
+                    else:
+                        output_lines.append('    ' + line_text)
+            
             output_lines.append('')
     
     elif elem_tag == 'milestone':
@@ -217,4 +277,12 @@ def extract_text_with_emphasis(elem):
             result += child.tail
     
     return result
+
+def visual_length(text):
+    """Calculate visual length of text, excluding underscore markers."""
+    # Remove underscore pairs that mark emphasis
+    import re
+    # Replace _text_ with just text for counting purposes
+    visual = re.sub(r'_([^_]+)_', r'\1', text)
+    return len(visual)
 

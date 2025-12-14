@@ -59,9 +59,11 @@ def convert(tei_file, output_file, css_file=None):
         html_parts.append('    figure img { max-width: 100%; height: auto; }')
         html_parts.append('    figcaption { margin-top: 0.5em; font-style: italic; }')
         html_parts.append('    .poem { margin: 2em 0; }')
+        html_parts.append('    .poem.center { text-align: center; }')
+        html_parts.append('    .poem.center .stanza { display: inline-block; text-align: left; }')
         html_parts.append('    .poem-title { text-align: center; font-weight: bold; margin-bottom: 1em; }')
         html_parts.append('    .stanza { margin-bottom: 1em; }')
-        html_parts.append('    .line { margin: 0; }')
+        html_parts.append('    .line { margin-top: 0; margin-bottom: 0; }')
         html_parts.append('    .indent { margin-left: 2em; }')
         html_parts.append('    .indent2 { margin-left: 4em; }')
         html_parts.append('    .indent3 { margin-left: 6em; }')
@@ -202,7 +204,11 @@ def process_element(elem):
         return '\n'.join(parts)
     
     elif tag == 'lg':  # Line group (verse)
-        parts = ['<div class="poem">']
+        rend = elem.get('rend', '')
+        if rend:
+            parts = [f'<div class="poem {rend}">']
+        else:
+            parts = ['<div class="poem">']
         
         # Check for title
         head = elem.find('tei:head', TEI_NS)

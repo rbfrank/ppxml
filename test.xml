@@ -104,6 +104,8 @@
         
         <lg>
           <l rend="center">For my beloved</l>
+        </lg>
+        <lg rend='center'>
           <l>This is the first line, not indented</l>
           <l rend="indent">This line has a single indent</l>
           <l rend="indent2">This line has a double indent</l>
