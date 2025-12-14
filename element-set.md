@@ -16,6 +16,7 @@
 
 ### Basic Text Structure
 - `<p>` - Paragraph
+  - Use `@rend` attribute for styling: `rend="no-indent"`, or any custom CSS class
 
 ## Additional Structural Elements
 
@@ -29,8 +30,10 @@
 
 ### Poetry/Verse
 - `<lg>` - Line group (stanza, verse paragraph)
+  - Use `@rend="center"` to center the entire poem
 - `<l>` - Line of verse
   - Use `@rend` attribute for indentation: `rend="indent"`, `rend="indent2"`, or `rend="indent3"`
+  - Use `@rend="center"` to center a single line
 
 ### Lists
 - `<list>` - List container
@@ -47,7 +50,7 @@
 
 ### Emphasis and Highlighting
 - `<hi>` - Highlighted text (general purpose)
-  - Use `@rend` attribute: `rend="italic"`, `rend="bold"`, `rend="underline"`, `rend="center"`, etc.
+  - Use `@rend` attribute: `rend="italic"`, `rend="bold"`, `rend="underline"`, `rend="small-caps"`, etc.
 - `<emph>` - Semantic emphasis (optional alternative to `<hi>`)
 
 ### Quotations and References
@@ -67,6 +70,7 @@
   - Use `@n` attribute for page numbers: `<pb n="42"/>`
 - `<milestone>` - Section break or thought break
   - Use `@rend="stars"` for asterisk separator: `<milestone rend="stars"/>`
+  - Use `@rend="space"` for blank space separator: `<milestone rend="space"/>`
 
 ### Figures/Illustrations
 - `<figure>` - Container for illustrations
