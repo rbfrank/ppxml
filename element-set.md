@@ -67,9 +67,10 @@
 
 ### Figures/Illustrations
 - `<figure>` - Container for illustrations
-  - Use `@rend` attribute for CSS styling classes: `<figure rend="half-width">`
+  - Use `@rend` attribute for positioning: `rend="left"`, `rend="right"`, or `rend="center"`
 - `<graphic>` - Image reference
   - Use `@url` attribute: `<graphic url="images/picture.jpg"/>`
+  - Use `@width` attribute for sizing: `<graphic url="..." width="50%"/>` or `<graphic url="..." width="300px"/>`
 - `<figDesc>` - Figure description (for alt text/accessibility)
 - `<head>` - Caption for the figure (when used within `<figure>`)
 

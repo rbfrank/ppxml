@@ -194,12 +194,17 @@ def process_element(elem):
         graphic = elem.find('tei:graphic', TEI_NS)
         if graphic is not None:
             url = graphic.get('url', '')
+            width = graphic.get('width', '')
             
             # Get alt text from figDesc
             figdesc = elem.find('tei:figDesc', TEI_NS)
             alt_text = ''.join(figdesc.itertext()).strip() if figdesc is not None else ''
             
-            parts.append(f'  <img src="{url}" alt="{alt_text}">')
+            # Build img tag with optional width
+            if width:
+                parts.append(f'  <img src="{url}" alt="{alt_text}" style="width: {width};">')
+            else:
+                parts.append(f'  <img src="{url}" alt="{alt_text}">')
         
         # Add caption from head
         head = elem.find('tei:head', TEI_NS)
