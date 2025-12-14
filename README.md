@@ -1,8 +1,7 @@
 # ppxml
 
 Bookcove's TEI converter (restricted subset)
-converts TEI XML to text, HTML (EPUB3 and LaTeX in development)
-implemented XML elements documented in `element-set.md`
+converts TEI XML to text, HTML (EPUB3 and LaTeX in development).
 
 ## features
 
@@ -28,13 +27,12 @@ Requires Python 3.6 or higher (with lxml library).
 The repository includes these files:
 
 ```
-ppxml.py                  <- main Python program
-writers/                  <- writers directory for text, HTML, etc.
-element-set.md            <- description of supported TEI XML elements
+ppxml.py       <- main Python program
+writers/       <- writers directory for text, HTML, etc.
+element-set.md <- supported TEI XML elements
 ```
 
 It also includes an `examples/` directory:
-
 
 - `firebrand/` a simple starting example with basic markup
 - `emmylou/` a much more complicated example demonstrating markup for floated images, title page, a Table of Contents, poetry, and other more advanced constructions.
@@ -49,7 +47,8 @@ cd example  # change to the firebrands example directory
 python3 ../ppxml.py firebrands.xml firebrands.txt
 
 # generate the HTML
-# if there is an external stylesheet, it will be appended to the internal CSS
+# if there is an external stylesheet, it will be
+# appended to the internal CSS
 python3 ../ppxml.py firebrands.xml firebrands.html
 
 ```
@@ -64,7 +63,7 @@ python3 ../ppxml.py firebrands.xml firebrands.html
 - **HTML** - Web pages with optional CSS styling
 - **Plain Text** - Formatted text with optional line width
 
-## outpput formats in development
+## output formats in development
 
 - **LaTeX** - For PDF generation (requires pdflatex)
 - **EPUB3** - Electronic book format
