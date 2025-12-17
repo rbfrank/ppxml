@@ -367,7 +367,11 @@ def process_text_content(elem, quote_depth=0):
             result += f'<em>{"".join(child.itertext())}</em>'
         
         elif tag == 'ref':
-            result += f'<a href="{child.get("target", "#")}">{"".join(child.itertext())}</a>'
+            target = child.get('target', '#')
+            # Add # prefix for internal links (unless already present or it's an external URL)
+            if not target.startswith(('#', 'http://', 'https://', '//')):
+                target = '#' + target
+            result += f'<a href="{target}">{"".join(child.itertext())}</a>'
         
         elif tag == 'note':
             result += f'<sup>[{"".join(child.itertext())}]</sup>'
