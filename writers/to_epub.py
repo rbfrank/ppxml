@@ -226,6 +226,7 @@ td, th { border: 1px solid #ccc; padding: 0.5em; }
 def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None, id_map=None):
     """Create an XHTML chapter file."""
     from .to_html import process_element, process_text_content
+    import html
     
     # Get chapter title
     head = div.find('tei:head', TEI_NS)
@@ -237,7 +238,7 @@ def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None, i
     parts.append('<!DOCTYPE html>')
     parts.append('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">')
     parts.append('<head>')
-    parts.append(f'  <title>{chapter_title}</title>')
+    parts.append(f'  <title>{html.escape(chapter_title)}</title>')
     parts.append('  <link rel="stylesheet" type="text/css" href="styles.css"/>')
     parts.append('</head>')
     parts.append('<body>')
@@ -274,6 +275,8 @@ def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None, i
 
 def create_nav_doc(oebps, title, toc_entries):
     """Create navigation document (nav.xhtml) for EPUB3."""
+    import html
+    
     nav = ['<?xml version="1.0" encoding="UTF-8"?>']
     nav.append('<!DOCTYPE html>')
     nav.append('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">')
@@ -283,11 +286,11 @@ def create_nav_doc(oebps, title, toc_entries):
     nav.append('</head>')
     nav.append('<body>')
     nav.append('  <nav epub:type="toc" id="toc">')
-    nav.append(f'    <h1>{title}</h1>')
+    nav.append(f'    <h1>{html.escape(title)}</h1>')
     nav.append('    <ol>')
     
     for entry in toc_entries:
-        nav.append(f'      <li><a href="{entry["filename"]}">{entry["title"]}</a></li>')
+        nav.append(f'      <li><a href="{entry["filename"]}">{html.escape(entry["title"])}</a></li>')
     
     nav.append('    </ol>')
     nav.append('  </nav>')
@@ -299,6 +302,7 @@ def create_nav_doc(oebps, title, toc_entries):
 
 def create_package_doc(oebps, title, book_id, chapters, doc, image_map=None):
     """Create package document (content.opf)."""
+    import html
     # Extract metadata from TEI header
     header = doc.find('.//tei:teiHeader', TEI_NS)
     
@@ -318,9 +322,9 @@ def create_package_doc(oebps, title, book_id, chapters, doc, image_map=None):
     # Metadata
     opf.append('  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">')
     opf.append(f'    <dc:identifier id="book-id">{book_id}</dc:identifier>')
-    opf.append(f'    <dc:title>{title}</dc:title>')
+    opf.append(f'    <dc:title>{html.escape(title)}</dc:title>')
     opf.append(f'    <dc:language>{lang}</dc:language>')
-    opf.append(f'    <dc:creator>{author}</dc:creator>')
+    opf.append(f'    <dc:creator>{html.escape(author)}</dc:creator>')
     opf.append(f'    <meta property="dcterms:modified">{datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}</meta>')
     
     # Add cover metadata if cover image exists
