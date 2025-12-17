@@ -211,7 +211,16 @@ def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None):
         if not isinstance(elem.tag, str):
             continue
         if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
-            parts.append(process_element(elem, xhtml=True, image_map=image_map))
+            html = process_element(elem, xhtml=True)
+            # Replace image src if needed
+            if image_map:
+                import re
+                def replace_img_src(match):
+                    src = match.group(1)
+                    new_src = image_map.get(src, src)
+                    return f'<img src="{new_src}"'
+                html = re.sub(r'<img src="([^"]+)"', replace_img_src, html)
+            parts.append(html)
     
     parts.append('</body>')
     parts.append('</html>')
