@@ -56,7 +56,7 @@ def convert(tei_file, output_file):
         
         # --- IMAGE HANDLING ---
         from .epub_image_utils import collect_graphic_urls, copy_images_to_epub
-        image_urls = collect_graphic_urls(doc)
+        image_urls = collect_graphic_urls(doc, input_dir)
         oebps_images_dir = None
         image_map = {}
         if image_urls:
@@ -291,21 +291,20 @@ def create_package_doc(oebps, title, book_id, chapters, doc, image_map=None):
     # Add images to manifest
     if image_map:
         for new_path in image_map.values():
-            if new_path.startswith('images/'):
-                filename = os.path.basename(new_path)
-                ext = os.path.splitext(filename)[1].lower()
-                if ext == '.png':
-                    media_type = 'image/png'
-                elif ext == '.jpg' or ext == '.jpeg':
-                    media_type = 'image/jpeg'
-                elif ext == '.gif':
-                    media_type = 'image/gif'
-                elif ext == '.svg':
-                    media_type = 'image/svg+xml'
-                else:
-                    media_type = 'image/png'  # default
-                item_id = f"img_{filename.replace('.', '_')}"
-                opf.append(f'    <item id="{item_id}" href="{new_path}" media-type="{media_type}"/>')
+            filename = os.path.basename(new_path)
+            ext = os.path.splitext(filename)[1].lower()
+            if ext == '.png':
+                media_type = 'image/png'
+            elif ext == '.jpg' or ext == '.jpeg':
+                media_type = 'image/jpeg'
+            elif ext == '.gif':
+                media_type = 'image/gif'
+            elif ext == '.svg':
+                media_type = 'image/svg+xml'
+            else:
+                media_type = 'image/png'  # default
+            item_id = f"img_{filename.replace('.', '_')}"
+            opf.append(f'    <item id="{item_id}" href="{new_path}" media-type="{media_type}"/>')
     
     opf.append('  </manifest>')
     
