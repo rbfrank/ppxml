@@ -251,6 +251,8 @@ def process_element(elem, xhtml=False, id_map=None):
             # Get alt text from figDesc
             figdesc = elem.find('tei:figDesc', TEI_NS)
             alt_text = ''.join(figdesc.itertext()).strip() if figdesc is not None else ''
+            if xhtml:
+                alt_text = html.escape(alt_text)
             
             if xhtml:
                 parts.append(f'  <img src="{url}" alt="{alt_text}"/>')
@@ -337,12 +339,17 @@ def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
     Args:
         elem: The element to process
         quote_depth: Current nesting depth of quotes (0 = not in quote, 1 = outer, 2 = inner, etc.)
-        xhtml: If True, generate XHTML-compliant output with self-closing tags
+        xhtml: If True, generate XHTML-compliant output with self-closing tags and escaped HTML entities
     """
+    import html
+    
     result = ''
     
     if elem.text:
-        result = elem.text
+        if xhtml:
+            result = html.escape(elem.text)
+        else:
+            result = elem.text
     
     for child in elem:
         tag = child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
@@ -368,6 +375,8 @@ def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
         elif tag == 'hi':
             rend = child.get('rend', 'italic')
             child_text = ''.join(child.itertext())
+            if xhtml:
+                child_text = html.escape(child_text)
             if rend == 'italic':
                 result += f'<i>{child_text}</i>'
             elif rend == 'bold':
@@ -376,7 +385,10 @@ def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
                 result += f'<span class="{rend}">{child_text}</span>'
         
         elif tag == 'emph':
-            result += f'<em>{"".join(child.itertext())}</em>'
+            child_text = ''.join(child.itertext())
+            if xhtml:
+                child_text = html.escape(child_text)
+            result += f'<em>{child_text}</em>'
         
         elif tag == 'ref':
             target = child.get('target', '#')
@@ -392,22 +404,40 @@ def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
             elif not target.startswith(('#', 'http://', 'https://', '//')):
                 # For HTML/single file, add # prefix
                 target = '#' + target
-            result += f'<a href="{target}">{"".join(child.itertext())}</a>'
+            child_text = ''.join(child.itertext())
+            if xhtml:
+                child_text = html.escape(child_text)
+            result += f'<a href="{target}">{child_text}</a>'
         
         elif tag == 'note':
-            result += f'<sup>[{"".join(child.itertext())}]</sup>'
+            child_text = ''.join(child.itertext())
+            if xhtml:
+                child_text = html.escape(child_text)
+            result += f'<sup>[{child_text}]</sup>'
         
         elif tag == 'foreign':
-            result += f'<i>{"".join(child.itertext())}</i>'
+            child_text = ''.join(child.itertext())
+            if xhtml:
+                child_text = html.escape(child_text)
+            result += f'<i>{child_text}</i>'
         
         elif tag == 'title':
-            result += f'<i>{"".join(child.itertext())}</i>'
+            child_text = ''.join(child.itertext())
+            if xhtml:
+                child_text = html.escape(child_text)
+            result += f'<i>{child_text}</i>'
         
         else:
-            result += ''.join(child.itertext())
+            child_text = ''.join(child.itertext())
+            if xhtml:
+                child_text = html.escape(child_text)
+            result += child_text
         
         if child.tail:
-            result += child.tail
+            if xhtml:
+                result += html.escape(child.tail)
+            else:
+                result += child.tail
     
     return result
 
