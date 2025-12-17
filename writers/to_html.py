@@ -9,7 +9,6 @@ import html
 from .common import TEI_NS, parse_tei, get_title
 
 def convert(tei_file, output_file, css_file=None):
-    from datetime import datetime
     """
     Convert TEI XML to HTML.
     
