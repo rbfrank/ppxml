@@ -216,10 +216,10 @@ def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None):
             if image_map:
                 import re
                 def replace_img_src(match):
-                    src = match.group(1)
+                    src = match.group(2)
                     new_src = image_map.get(src, src)
-                    return f'<img src="{new_src}"'
-                html = re.sub(r'<img src="([^"]+)"', replace_img_src, html)
+                    return match.group(1) + new_src + match.group(3)
+                html = re.sub(r'(<img[^>]*src=")([^"]+)(")', replace_img_src, html)
             parts.append(html)
     
     parts.append('</body>')
