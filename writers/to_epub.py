@@ -64,6 +64,9 @@ def convert(tei_file, output_file):
             image_map = copy_images_to_epub(image_urls, input_dir, oebps_images_dir)
         # --- END IMAGE HANDLING ---
         
+        # Build ID mapping for cross-references
+        id_map = build_id_mapping(doc)
+        
         # Create content chapters
         chapters = []
         toc_entries = []
@@ -74,7 +77,7 @@ def convert(tei_file, output_file):
             for i, div in enumerate(front.findall('tei:div', TEI_NS)):
                 filename = f'front{i+1}.xhtml'
                 chapter_title = get_div_title(div)
-                create_chapter_file(oebps, filename, div, title, doc, image_map=image_map)
+                create_chapter_file(oebps, filename, div, title, doc, image_map=image_map, id_map=id_map)
                 chapters.append({'filename': filename, 'title': chapter_title or f'Front Matter {i+1}'})
                 if chapter_title:
                     toc_entries.append({'filename': filename, 'title': chapter_title})
@@ -85,7 +88,7 @@ def convert(tei_file, output_file):
             for i, div in enumerate(body.findall('tei:div', TEI_NS)):
                 filename = f'chapter{i+1}.xhtml'
                 chapter_title = get_div_title(div)
-                create_chapter_file(oebps, filename, div, title, doc, image_map=image_map)
+                create_chapter_file(oebps, filename, div, title, doc, image_map=image_map, id_map=id_map)
                 chapters.append({'filename': filename, 'title': chapter_title or f'Chapter {i+1}'})
                 if chapter_title:
                     toc_entries.append({'filename': filename, 'title': chapter_title})
@@ -97,7 +100,7 @@ def convert(tei_file, output_file):
                 if div.getparent().tag == f"{{{TEI_NS['tei']}}}back":
                     filename = f'back{i+1}.xhtml'
                     chapter_title = get_div_title(div)
-                    create_chapter_file(oebps, filename, div, title, doc, image_map=image_map)
+                    create_chapter_file(oebps, filename, div, title, doc, image_map=image_map, id_map=id_map)
                     chapters.append({'filename': filename, 'title': chapter_title or f'Back Matter {i+1}'})
                     if chapter_title:
                         toc_entries.append({'filename': filename, 'title': chapter_title})
@@ -118,12 +121,46 @@ def convert(tei_file, output_file):
         import shutil
         shutil.rmtree(temp_dir)
 
-def get_div_title(div):
-    """Extract title from div head element."""
-    head = div.find('tei:head', TEI_NS)
-    if head is not None:
-        return ''.join(head.itertext()).strip()
-    return None
+def build_id_mapping(doc):
+    """Build a mapping of XML IDs to their containing filenames."""
+    id_map = {}
+    
+    # Process front matter
+    front = doc.find('.//tei:front', TEI_NS)
+    if front is not None:
+        for i, div in enumerate(front.findall('tei:div', TEI_NS)):
+            filename = f'front{i+1}.xhtml'
+            collect_ids_from_div(div, filename, id_map)
+    
+    # Process body chapters
+    body = doc.find('.//tei:body', TEI_NS)
+    if body is not None:
+        for i, div in enumerate(body.findall('tei:div', TEI_NS)):
+            filename = f'chapter{i+1}.xhtml'
+            collect_ids_from_div(div, filename, id_map)
+    
+    # Process back matter
+    back = doc.find('.//tei:back', TEI_NS)
+    if back is not None:
+        for i, div in enumerate(back.findall('tei:div', TEI_NS)):
+            if div.getparent().tag == f"{{{TEI_NS['tei']}}}back":
+                filename = f'back{i+1}.xhtml'
+                collect_ids_from_div(div, filename, id_map)
+    
+    return id_map
+
+def collect_ids_from_div(div, filename, id_map):
+    """Collect all XML IDs from a div and its descendants."""
+    # Check div itself for ID
+    div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
+    if div_id:
+        id_map[div_id] = filename
+    
+    # Check all descendant elements for IDs
+    for elem in div.iter():
+        elem_id = elem.get('{http://www.w3.org/XML/1998/namespace}id', '')
+        if elem_id:
+            id_map[elem_id] = filename
 
 def create_container_xml(meta_inf):
     """Create META-INF/container.xml"""
@@ -179,7 +216,7 @@ td, th { border: 1px solid #ccc; padding: 0.5em; }
     
     return css
 
-def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None):
+def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None, id_map=None):
     """Create an XHTML chapter file."""
     from .to_html import process_element, process_text_content
     
@@ -202,16 +239,16 @@ def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None):
     if head is not None:
         div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
         if div_id:
-            parts.append(f'<h2 id="{div_id}">{process_text_content(head, xhtml=True)}</h2>')
+            parts.append(f'<h2 id="{div_id}">{process_text_content(head, xhtml=True, id_map=id_map)}</h2>')
         else:
-            parts.append(f'<h2>{process_text_content(head, xhtml=True)}</h2>')
+            parts.append(f'<h2>{process_text_content(head, xhtml=True, id_map=id_map)}</h2>')
     
     # Process all child elements
     for elem in div:
         if not isinstance(elem.tag, str):
             continue
         if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
-            html = process_element(elem, xhtml=True)
+            html = process_element(elem, xhtml=True, id_map=id_map)
             # Replace image src if needed
             if image_map:
                 import re

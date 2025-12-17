@@ -186,7 +186,7 @@ def convert(tei_file, output_file, css_file=None):
     
     print(f"HTML conversion complete: {output_file}")
 
-def process_element(elem, xhtml=False):
+def process_element(elem, xhtml=False, id_map=None):
     """Process a TEI element and return HTML string.
     
     Args:
@@ -317,7 +317,7 @@ def process_element(elem, xhtml=False):
             parts.append('<div>')
         
         for child in elem:
-            parts.append(process_element(child))
+            parts.append(process_element(child, xhtml=xhtml, id_map=id_map))
         
         parts.append('</div>')
         return '\n'.join(parts)
@@ -331,7 +331,7 @@ def process_element(elem, xhtml=False):
         # Default: just extract text
         return process_text_content(elem)
 
-def process_text_content(elem, quote_depth=0, xhtml=False):
+def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
     """Extract text content from element, processing inline markup.
     
     Args:
@@ -380,8 +380,17 @@ def process_text_content(elem, quote_depth=0, xhtml=False):
         
         elif tag == 'ref':
             target = child.get('target', '#')
-            # Add # prefix for internal links (unless already present or it's an external URL)
-            if not target.startswith(('#', 'http://', 'https://', '//')):
+            # Handle cross-references for EPUB (multi-file) vs HTML (single file)
+            if id_map and not target.startswith(('#', 'http://', 'https://', '//')):
+                # For EPUB, check if target ID exists in another file
+                if target in id_map:
+                    target_file = id_map[target]
+                    target = f'{target_file}#{target}'
+                else:
+                    # ID not found, assume it's in current file
+                    target = '#' + target
+            elif not target.startswith(('#', 'http://', 'https://', '//')):
+                # For HTML/single file, add # prefix
                 target = '#' + target
             result += f'<a href="{target}">{"".join(child.itertext())}</a>'
         
