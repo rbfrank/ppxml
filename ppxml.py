@@ -16,7 +16,7 @@ import os
 import argparse
 
 # Import converter modules
-from writers import to_html, to_text
+from writers import to_html, to_text, to_epub
 
 def main():
     parser = argparse.ArgumentParser(
@@ -25,15 +25,14 @@ def main():
         epilog='''
 Examples:
   python tei_convert.py book.xml book.html
-  python tei_convert.py book.xml book.html --css mystyles.css
   python tei_convert.py book.xml book.txt 72
+  python tei_convert.py book.xml book.epub
         '''
     )
     
     parser.add_argument('input', help='Input TEI XML file')
-    parser.add_argument('output', help='Output file (.html or .txt)')
+    parser.add_argument('output', help='Output file (.html, .txt, or .epub)')
     parser.add_argument('width', nargs='?', type=int, help='Line width for text output (default: 72)')
-    parser.add_argument('--css', help='External CSS file for HTML output')
     
     args = parser.parse_args()
     
@@ -46,14 +45,17 @@ Examples:
     
     try:
         if output_file.endswith('.html') or output_file.endswith('.xhtml'):
-            to_html.convert(input_file, output_file, css_file=args.css)
+            to_html.convert(input_file, output_file)
         
         elif output_file.endswith('.txt'):
             width = args.width if args.width else 72
             to_text.convert(input_file, output_file, width)
         
+        elif output_file.endswith('.epub'):
+            to_epub.convert(input_file, output_file)
+        
         else:
-            print("Error: Output file must have .html or .txt extension")
+            print("Error: Output file must have .html, .txt, or .epub extension")
             sys.exit(1)
     
     except Exception as e:
