@@ -288,6 +288,25 @@ def create_package_doc(oebps, title, book_id, chapters, doc, image_map=None):
     for i, chapter in enumerate(chapters):
         opf.append(f'    <item id="chapter{i+1}" href="{chapter["filename"]}" media-type="application/xhtml+xml"/>')
     
+    # Add images to manifest
+    if image_map:
+        for new_path in image_map.values():
+            if new_path.startswith('images/'):
+                filename = os.path.basename(new_path)
+                ext = os.path.splitext(filename)[1].lower()
+                if ext == '.png':
+                    media_type = 'image/png'
+                elif ext == '.jpg' or ext == '.jpeg':
+                    media_type = 'image/jpeg'
+                elif ext == '.gif':
+                    media_type = 'image/gif'
+                elif ext == '.svg':
+                    media_type = 'image/svg+xml'
+                else:
+                    media_type = 'image/png'  # default
+                item_id = f"img_{filename.replace('.', '_')}"
+                opf.append(f'    <item id="{item_id}" href="{new_path}" media-type="{media_type}"/>')
+    
     opf.append('  </manifest>')
     
     # Spine
