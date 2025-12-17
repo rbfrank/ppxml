@@ -278,6 +278,14 @@ def create_package_doc(oebps, title, book_id, chapters, doc, image_map=None):
     opf.append(f'    <dc:language>{lang}</dc:language>')
     opf.append(f'    <dc:creator>{author}</dc:creator>')
     opf.append(f'    <meta property="dcterms:modified">{datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")}</meta>')
+    
+    # Add cover metadata if cover image exists
+    if image_map and any(path in ['cover.jpg', 'cover.jpeg', 'cover.png', 'cover.gif'] for path in image_map.values()):
+        cover_filename = next((path for path in image_map.values() if path in ['cover.jpg', 'cover.jpeg', 'cover.png', 'cover.gif']), None)
+        if cover_filename:
+            cover_id = f"img_{cover_filename.replace('.', '_')}"
+            opf.append(f'    <meta name="cover" content="{cover_id}"/>')
+    
     opf.append('  </metadata>')
     
     # Manifest
