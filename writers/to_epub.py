@@ -54,6 +54,16 @@ def convert(tei_file, output_file):
         with open(os.path.join(oebps, 'styles.css'), 'w', encoding='utf-8') as f:
             f.write(css_content)
         
+        # --- IMAGE HANDLING ---
+        from .epub_image_utils import collect_graphic_urls, copy_images_to_epub
+        image_urls = collect_graphic_urls(doc)
+        oebps_images_dir = None
+        image_map = {}
+        if image_urls:
+            oebps_images_dir = os.path.join(oebps, 'images')
+            image_map = copy_images_to_epub(image_urls, input_dir, oebps_images_dir)
+        # --- END IMAGE HANDLING ---
+        
         # Create content chapters
         chapters = []
         toc_entries = []
@@ -64,7 +74,7 @@ def convert(tei_file, output_file):
             for i, div in enumerate(front.findall('tei:div', TEI_NS)):
                 filename = f'front{i+1}.xhtml'
                 chapter_title = get_div_title(div)
-                create_chapter_file(oebps, filename, div, title, doc)
+                create_chapter_file(oebps, filename, div, title, doc, image_map=image_map)
                 chapters.append({'filename': filename, 'title': chapter_title or f'Front Matter {i+1}'})
                 if chapter_title:
                     toc_entries.append({'filename': filename, 'title': chapter_title})
@@ -75,7 +85,7 @@ def convert(tei_file, output_file):
             for i, div in enumerate(body.findall('tei:div', TEI_NS)):
                 filename = f'chapter{i+1}.xhtml'
                 chapter_title = get_div_title(div)
-                create_chapter_file(oebps, filename, div, title, doc)
+                create_chapter_file(oebps, filename, div, title, doc, image_map=image_map)
                 chapters.append({'filename': filename, 'title': chapter_title or f'Chapter {i+1}'})
                 if chapter_title:
                     toc_entries.append({'filename': filename, 'title': chapter_title})
@@ -87,7 +97,7 @@ def convert(tei_file, output_file):
                 if div.getparent().tag == f"{{{TEI_NS['tei']}}}back":
                     filename = f'back{i+1}.xhtml'
                     chapter_title = get_div_title(div)
-                    create_chapter_file(oebps, filename, div, title, doc)
+                    create_chapter_file(oebps, filename, div, title, doc, image_map=image_map)
                     chapters.append({'filename': filename, 'title': chapter_title or f'Back Matter {i+1}'})
                     if chapter_title:
                         toc_entries.append({'filename': filename, 'title': chapter_title})
@@ -96,7 +106,7 @@ def convert(tei_file, output_file):
         create_nav_doc(oebps, title, toc_entries)
         
         # Create package document (OPF)
-        create_package_doc(oebps, title, book_id, chapters, doc)
+        create_package_doc(oebps, title, book_id, chapters, doc, image_map=image_map)
         
         # Create EPUB file
         create_epub_archive(temp_dir, output_file)
@@ -169,7 +179,7 @@ td, th { border: 1px solid #ccc; padding: 0.5em; }
     
     return css
 
-def create_chapter_file(oebps, filename, div, book_title, doc):
+def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None):
     """Create an XHTML chapter file."""
     from .to_html import process_element, process_text_content
     
@@ -201,7 +211,7 @@ def create_chapter_file(oebps, filename, div, book_title, doc):
         if not isinstance(elem.tag, str):
             continue
         if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
-            parts.append(process_element(elem, xhtml=True))
+            parts.append(process_element(elem, xhtml=True, image_map=image_map))
     
     parts.append('</body>')
     parts.append('</html>')
@@ -234,7 +244,7 @@ def create_nav_doc(oebps, title, toc_entries):
     with open(os.path.join(oebps, 'nav.xhtml'), 'w', encoding='utf-8') as f:
         f.write('\n'.join(nav))
 
-def create_package_doc(oebps, title, book_id, chapters, doc):
+def create_package_doc(oebps, title, book_id, chapters, doc, image_map=None):
     """Create package document (content.opf)."""
     # Extract metadata from TEI header
     header = doc.find('.//tei:teiHeader', TEI_NS)
@@ -247,7 +257,7 @@ def create_package_doc(oebps, title, book_id, chapters, doc):
             author = ''.join(author_elem.itertext()).strip()
     
     # Get language
-    lang = doc.getroot().get('{http://www.w3.org/XML/1998/namespace}lang', 'en')
+    lang = doc.getroot().get('{http://www.w3.org/1998/namespace}lang', 'en')
     
     opf = ['<?xml version="1.0" encoding="UTF-8"?>']
     opf.append('<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="book-id">')
