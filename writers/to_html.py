@@ -8,6 +8,8 @@ import html
 from .common import TEI_NS, parse_tei, get_title
 
 def convert(tei_file, output_file, css_file=None):
+        from datetime import datetime
+        print(f"[INFO] to_html.py run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     """
     Convert TEI XML to HTML.
     
