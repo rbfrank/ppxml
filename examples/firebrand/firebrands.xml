@@ -17,6 +17,10 @@
   <text>
     <front>
       <div type="titlepage">
+        <figure rend="center">
+          <graphic url="cover.jpg"/>
+          <figDesc>Cover image for Fire Brands</figDesc>
+        </figure>
         <figure rend="center70">
           <graphic url="images/illus-013.png"/>
           <figDesc>Two cowboys tie a rope between doorknobs.</figDesc>
