@@ -186,8 +186,13 @@ def convert(tei_file, output_file, css_file=None):
     
     print(f"HTML conversion complete: {output_file}")
 
-def process_element(elem):
-    """Process a TEI element and return HTML string."""
+def process_element(elem, xhtml=False):
+    """Process a TEI element and return HTML string.
+    
+    Args:
+        elem: The element to process
+        xhtml: If True, generate XHTML-compliant output with self-closing tags
+    """
     tag = elem.tag.replace(f"{{{TEI_NS['tei']}}}", '')
     
     if tag == 'p':
@@ -247,7 +252,10 @@ def process_element(elem):
             figdesc = elem.find('tei:figDesc', TEI_NS)
             alt_text = ''.join(figdesc.itertext()).strip() if figdesc is not None else ''
             
-            parts.append(f'  <img src="{url}" alt="{alt_text}">')
+            if xhtml:
+                parts.append(f'  <img src="{url}" alt="{alt_text}"/>')
+            else:
+                parts.append(f'  <img src="{url}" alt="{alt_text}">')
         
         # Add caption from head
         head = elem.find('tei:head', TEI_NS)
@@ -323,12 +331,13 @@ def process_element(elem):
         # Default: just extract text
         return process_text_content(elem)
 
-def process_text_content(elem, quote_depth=0):
+def process_text_content(elem, quote_depth=0, xhtml=False):
     """Extract text content from element, processing inline markup.
     
     Args:
         elem: The element to process
         quote_depth: Current nesting depth of quotes (0 = not in quote, 1 = outer, 2 = inner, etc.)
+        xhtml: If True, generate XHTML-compliant output with self-closing tags
     """
     result = ''
     
@@ -340,11 +349,14 @@ def process_text_content(elem, quote_depth=0):
         
         if tag == 'lb':
             # Line break - self-closing tag
-            result += '<br>'
+            if xhtml:
+                result += '<br/>'
+            else:
+                result += '<br>'
         
         elif tag == 'quote':
             # Recursively process quote content at next depth level
-            child_text = process_text_content(child, quote_depth + 1)
+            child_text = process_text_content(child, quote_depth + 1, xhtml)
             # Alternate between double and single quotes
             if quote_depth % 2 == 0:
                 # Even depth (0, 2, 4...): use double quotes

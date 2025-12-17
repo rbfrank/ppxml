@@ -192,16 +192,16 @@ def create_chapter_file(oebps, filename, div, book_title, doc):
     if head is not None:
         div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
         if div_id:
-            parts.append(f'<h2 id="{div_id}">{process_text_content(head)}</h2>')
+            parts.append(f'<h2 id="{div_id}">{process_text_content(head, xhtml=True)}</h2>')
         else:
-            parts.append(f'<h2>{process_text_content(head)}</h2>')
+            parts.append(f'<h2>{process_text_content(head, xhtml=True)}</h2>')
     
     # Process all child elements
     for elem in div:
         if not isinstance(elem.tag, str):
             continue
         if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
-            parts.append(process_element(elem))
+            parts.append(process_element(elem, xhtml=True))
     
     parts.append('</body>')
     parts.append('</html>')
