@@ -2,14 +2,14 @@
 v15 to_html.py - Convert TEI to HTML
 """
 
+from datetime import datetime
 import os
 import glob
 import html
 from .common import TEI_NS, parse_tei, get_title
 
 def convert(tei_file, output_file, css_file=None):
-        from datetime import datetime
-        print(f"[INFO] to_html.py run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    from datetime import datetime
     """
     Convert TEI XML to HTML.
     
@@ -18,6 +18,9 @@ def convert(tei_file, output_file, css_file=None):
         output_file: Path to HTML output file
         css_file: Optional path to external CSS file (default: auto-detect or use embedded styles)
     """
+
+    print(f"[INFO] to_html.py run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
     doc = parse_tei(tei_file)
     title = get_title(doc)
     
