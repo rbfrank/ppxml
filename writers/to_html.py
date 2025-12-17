@@ -181,10 +181,15 @@ def convert(tei_file, output_file, css_file=None):
     html_parts.append('</body>')
     html_parts.append('</html>')
     
-    # Write output
+    # Write output, print any line with a bare '&' (not part of an entity)
+    output_lines = '\n'.join(html_parts).split('\n')
+    import re
+    for i, line in enumerate(output_lines, 1):
+        # Match bare '&' not followed by one of the allowed entity starts
+        if re.search(r'&(?![a-zA-Z#0-9]+;)', line):
+            print(f"[DEBUG] Bare & in HTML output at line {i}: {line}")
     with open(output_file, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(html_parts))
-    
+        f.write('\n'.join(output_lines))
     print(f"HTML conversion complete: {output_file}")
 
 def process_element(elem, xhtml=False, id_map=None):
