@@ -9,6 +9,13 @@ import glob
 from datetime import datetime
 from .common import TEI_NS, parse_tei, get_title
 
+def get_div_title(div):
+    """Extract title from div head element."""
+    head = div.find('tei:head', TEI_NS)
+    if head is not None:
+        return ''.join(head.itertext()).strip()
+    return None
+
 def convert(tei_file, output_file):
     """
     Convert TEI XML to EPUB3.
