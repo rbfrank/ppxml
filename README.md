@@ -11,14 +11,29 @@ converts TEI XML to text, HTML (EPUB3 and LaTeX in development).
 
 ## installation
 
-No installation required. Clone or download this repository:
+Clone or download this repository:
 
 ```bash
 git clone https://github.com/rbfrank/ppxml.git
 cd ppxml
 ```
 
-Requires Python 3.6 or higher (with lxml library).
+### setup virtual environment (recommended)
+
+Create and activate a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Requires Python 3.6 or higher.
 
 ## usage
 
@@ -40,18 +55,19 @@ It also includes an `examples/` directory:
 
 ### converting TEI XML to other formats
 
-Here is a sample sequence to generate the text and HTML for the book "Emmy Lou, Her Book and Heart"
+After setting up the virtual environment, here is a sample sequence to generate the text and HTML for the book "Emmy Lou, Her Book and Heart":
 
 ```bash
-mkdir emmylou
-cd emmylou
-git clone git@github.com:rbfrank/ppxml.git
-cd ppxml/examples/emmylou
-python3 ../../ppxml.py emmylou.xml emmylou.txt
-python3 ../../ppxml.py emmylou.xml emmylou.html
+# Activate virtual environment
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Generate outputs
+cd examples/emmylou
+python ../../ppxml.py emmylou.xml emmylou.txt
+python ../../ppxml.py emmylou.xml emmylou.html
 ```
 
-That will generate `emmylou.txt` and `emmylou.html` in the `ppxml/examples/emmylou/` directory.
+That will generate `emmylou.txt` and `emmylou.html` in the `examples/emmylou/` directory.
 
 Note: Python must include the lxml libraries to run `ppxml.py`.
 
