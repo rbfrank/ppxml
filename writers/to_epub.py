@@ -10,10 +10,12 @@ from datetime import datetime
 from .common import TEI_NS, parse_tei, get_title
 
 def get_div_title(div):
-    """Extract title from div head element."""
+    """Extract title from div head element, escaping for XHTML."""
+    import html
     head = div.find('tei:head', TEI_NS)
     if head is not None:
-        return ''.join(head.itertext()).strip()
+        # Escape all text for XHTML
+        return html.escape(''.join(head.itertext()).strip())
     return None
 
 def convert(tei_file, output_file):
@@ -250,13 +252,13 @@ def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None, i
             parts.append(f'<h2 id="{div_id}">{process_text_content(head, xhtml=True, id_map=id_map)}</h2>')
         else:
             parts.append(f'<h2>{process_text_content(head, xhtml=True, id_map=id_map)}</h2>')
-    
+
     # Process all child elements
     for elem in div:
         if not isinstance(elem.tag, str):
             continue
         if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
-            html = process_element(elem, xhtml=True, id_map=id_map)
+            html_out = process_element(elem, xhtml=True, id_map=id_map)
             # Replace image src if needed
             if image_map:
                 import re
@@ -264,8 +266,8 @@ def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None, i
                     src = match.group(2)
                     new_src = image_map.get(src, src)
                     return match.group(1) + new_src + match.group(3)
-                html = re.sub(r'(<img[^>]*src=")([^"]+)(")', replace_img_src, html)
-            parts.append(html)
+                html_out = re.sub(r'(<img[^>]*src=")([^"]+)(")', replace_img_src, html_out)
+            parts.append(html_out)
     
     parts.append('</body>')
     parts.append('</html>')
