@@ -354,8 +354,11 @@ def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
     import html
     
     result = ''
-    
+    import re
+    # Check for bare & in elem.text before escaping
     if elem.text:
+        if re.search(r'&(?![a-zA-Z#0-9]+;)', elem.text):
+            print(f"[DEBUG] Bare & in <{elem.tag}> text: {elem.text}")
         if xhtml:
             result = html.escape(elem.text)
         else:
@@ -444,6 +447,8 @@ def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
             result += child_text
         
         if child.tail:
+            if re.search(r'&(?![a-zA-Z#0-9]+;)', child.tail):
+                print(f"[DEBUG] Bare & in <{child.tag}> tail: {child.tail}")
             if xhtml:
                 result += html.escape(child.tail)
             else:
