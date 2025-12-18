@@ -185,15 +185,9 @@ def convert(tei_file, output_file, css_file=None):
     html_parts.append('</body>')
     html_parts.append('</html>')
     
-    # Write output, print any line with a bare '&' (not part of an entity)
-    output_lines = '\n'.join(html_parts).split('\n')
-    import re
-    for i, line in enumerate(output_lines, 1):
-        # Match bare '&' not followed by one of the allowed entity starts
-        if re.search(r'&(?![a-zA-Z#0-9]+;)', line):
-            print(f"[DEBUG] Bare & in HTML output at line {i}: {line}")
+    # Write output
     with open(output_file, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(output_lines))
+        f.write('\n'.join(html_parts))
     print(f"HTML conversion complete: {output_file}")
 
 def process_element(elem, xhtml=False, id_map=None):
@@ -208,9 +202,9 @@ def process_element(elem, xhtml=False, id_map=None):
     if tag == 'p':
         rend = elem.get('rend', '')
         if rend:
-            return f'<p class="{rend}">{process_text_content(elem)}</p>'
+            return f'<p class="{rend}">{process_text_content(elem, xhtml=xhtml, id_map=id_map)}</p>'
         else:
-            return f'<p>{process_text_content(elem)}</p>'
+            return f'<p>{process_text_content(elem, xhtml=xhtml, id_map=id_map)}</p>'
     
     elif tag == 'quote':
         # Check if it's a block quote (standalone) or inline
@@ -218,14 +212,14 @@ def process_element(elem, xhtml=False, id_map=None):
         # Inline if parent is p, item, cell, or other inline containers
         if parent_tag in ['p', 'item', 'cell', 'note', 'head']:
             # Inline quote - add smart quotes (U+201C and U+201D)
-            return '\u201c' + process_text_content(elem) + '\u201d'
+            return '\u201c' + process_text_content(elem, xhtml=xhtml, id_map=id_map) + '\u201d'
         else:
-            return f'<blockquote><p>{process_text_content(elem)}</p></blockquote>'
+            return f'<blockquote><p>{process_text_content(elem, xhtml=xhtml, id_map=id_map)}</p></blockquote>'
     
     elif tag == 'list':
         items = []
         for item in elem.findall('tei:item', TEI_NS):
-            items.append(f'  <li>{process_text_content(item)}</li>')
+            items.append(f'  <li>{process_text_content(item, xhtml=xhtml, id_map=id_map)}</li>')
         return '<ul>\n' + '\n'.join(items) + '\n</ul>'
     
     elif tag == 'table':
@@ -234,7 +228,7 @@ def process_element(elem, xhtml=False, id_map=None):
             cells = []
             for cell in row.findall('tei:cell', TEI_NS):
                 cell_tag = 'th' if cell.get('role') == 'label' else 'td'
-                cells.append(f'    <{cell_tag}>{process_text_content(cell)}</{cell_tag}>')
+                cells.append(f'    <{cell_tag}>{process_text_content(cell, xhtml=xhtml, id_map=id_map)}</{cell_tag}>')
             rows.append('  <tr>\n' + '\n'.join(cells) + '\n  </tr>')
         return '<table>\n' + '\n'.join(rows) + '\n</table>'
     
@@ -272,7 +266,7 @@ def process_element(elem, xhtml=False, id_map=None):
         # Add caption from head
         head = elem.find('tei:head', TEI_NS)
         if head is not None:
-            parts.append(f'  <figcaption>{process_text_content(head)}</figcaption>')
+            parts.append(f'  <figcaption>{process_text_content(head, xhtml=xhtml, id_map=id_map)}</figcaption>')
         
         parts.append('</figure>')
         return '\n'.join(parts)
@@ -287,7 +281,7 @@ def process_element(elem, xhtml=False, id_map=None):
         # Check for title
         head = elem.find('tei:head', TEI_NS)
         if head is not None:
-            parts.append(f'  <div class="poem-title">{process_text_content(head)}</div>')
+            parts.append(f'  <div class="poem-title">{process_text_content(head, xhtml=xhtml, id_map=id_map)}</div>')
         
         # Check for nested stanzas
         nested_lg = elem.findall('tei:lg', TEI_NS)
@@ -298,7 +292,7 @@ def process_element(elem, xhtml=False, id_map=None):
                 for line in stanza.findall('tei:l', TEI_NS):
                     rend = line.get('rend', '')
                     line_class = f'line {rend}' if rend else 'line'
-                    parts.append(f'    <div class="{line_class}">{process_text_content(line)}</div>')
+                    parts.append(f'    <div class="{line_class}">{process_text_content(line, xhtml=xhtml, id_map=id_map)}</div>')
                 parts.append('  </div>')
         else:
             # Single stanza - direct lines
@@ -306,7 +300,7 @@ def process_element(elem, xhtml=False, id_map=None):
             for line in elem.findall('tei:l', TEI_NS):
                 rend = line.get('rend', '')
                 line_class = f'line {rend}' if rend else 'line'
-                parts.append(f'    <div class="{line_class}">{process_text_content(line)}</div>')
+                parts.append(f'    <div class="{line_class}">{process_text_content(line, xhtml=xhtml, id_map=id_map)}</div>')
             parts.append('  </div>')
         
         parts.append('</div>')
@@ -341,7 +335,7 @@ def process_element(elem, xhtml=False, id_map=None):
     
     else:
         # Default: just extract text
-        return process_text_content(elem)
+        return process_text_content(elem, xhtml=xhtml, id_map=id_map)
 
 def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
     """Extract text content from element, processing inline markup.
@@ -354,11 +348,8 @@ def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
     import html
     
     result = ''
-    import re
-    # Check for bare & in elem.text before escaping
+    # Initialize text content
     if elem.text:
-        if re.search(r'&(?![a-zA-Z#0-9]+;)', elem.text):
-            print(f"[DEBUG] Bare & in <{elem.tag}> text: {elem.text}")
         if xhtml:
             result = html.escape(elem.text)
         else:
@@ -447,8 +438,6 @@ def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
             result += child_text
         
         if child.tail:
-            if re.search(r'&(?![a-zA-Z#0-9]+;)', child.tail):
-                print(f"[DEBUG] Bare & in <{child.tag}> tail: {child.tail}")
             if xhtml:
                 result += html.escape(child.tail)
             else:
