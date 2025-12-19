@@ -105,22 +105,13 @@ def process_element(elem, output_lines, line_width):
     if elem_tag == 'p':
         text = extract_text_with_emphasis(elem).strip()
         if text:
-            # Check if there are line breaks in the text
-            if '\n' in text:
-                # Split on line breaks and wrap each part separately
-                parts = text.split('\n')
-                for part in parts:
-                    if part.strip():
-                        wrapped = textwrap.fill(part.strip(), width=line_width,
-                                              break_long_words=False,
-                                              break_on_hyphens=False)
-                        output_lines.append(wrapped)
-            else:
-                # Normal paragraph wrapping
-                wrapped = textwrap.fill(text, width=line_width,
-                                      break_long_words=False,
-                                      break_on_hyphens=False)
-                output_lines.append(wrapped)
+            # Collapse internal whitespace (including source line-breaks)
+            # so prose paragraphs reflow correctly when wrapped.
+            normalized = ' '.join(text.split())
+            wrapped = textwrap.fill(normalized, width=line_width,
+                                    break_long_words=False,
+                                    break_on_hyphens=False)
+            output_lines.append(wrapped)
             output_lines.append('')
     
     elif elem_tag == 'list':
