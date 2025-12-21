@@ -1,28 +1,31 @@
 """
-v15 to_html.py - Convert TEI to HTML
+to_html.py - Convert TEI to HTML
+
+This module provides a backward-compatible API that wraps the new
+HTMLRenderer implementation. The old implementation is preserved
+in to_html_old.py for reference.
 """
 
 from datetime import datetime
 import os
 import glob
-import html
-from .common import TEI_NS, parse_tei, get_title
+
+from .common import parse_tei
+from .renderers.html_renderer import HTMLRenderer
+from .core.traverser import TEITraverser
+
 
 def convert(tei_file, output_file, css_file=None):
     """
     Convert TEI XML to HTML.
-    
+
     Args:
         tei_file: Path to TEI XML input file
         output_file: Path to HTML output file
         css_file: Optional path to external CSS file (default: auto-detect or use embedded styles)
     """
-
     print(f"[INFO] to_html.py run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    doc = parse_tei(tei_file)
-    title = get_title(doc)
-    
     # Auto-detect CSS file in same directory if not specified
     if css_file is None:
         input_dir = os.path.dirname(os.path.abspath(tei_file))
@@ -30,427 +33,19 @@ def convert(tei_file, output_file, css_file=None):
         if css_files:
             css_file = css_files[0]  # Use first CSS file found
             print(f"Auto-detected CSS file: {os.path.basename(css_file)}")
-    
-    # Start building HTML
-    html_parts = []
-    html_parts.append('<!DOCTYPE html>')
-    html_parts.append('<html lang="en">')
-    html_parts.append('<head>')
-    html_parts.append('  <meta charset="UTF-8">')
-    html_parts.append('  <meta name="viewport" content="width=device-width, initial-scale=1.0">')
-    html_parts.append(f'  <title>{title}</title>')
-    
-    # Always embed default styles
-    html_parts.append('  <style>')
-    html_parts.append('    body { max-width: 40em; margin: 2em auto; padding: 0 1em; font-family: serif; line-height: 1.6; }')
-    html_parts.append('    h1 { text-align: center; }')
-    html_parts.append('    h2 { margin-top: 2em; }')
-    html_parts.append('    .italic { font-style: italic; }')
-    html_parts.append('    .bold { font-weight: bold; }')
-    html_parts.append('    .underline { text-decoration: underline; }')
-    html_parts.append('    .small-caps { font-variant: small-caps; }')
-    html_parts.append('    blockquote { margin: 1em 2em; }')
-    html_parts.append('    figure { margin: 2em auto; width: 80%; max-width: 100%; text-align: center; }')
-    html_parts.append('    figure.left { float: left; margin: 0 2em 1em 0; width: 50%; max-width: 50%; }')
-    html_parts.append('    figure.right { float: right; margin: 0 0 1em 2em; width: 50%; max-width: 50%; }')
-    html_parts.append('    figure.center { margin: 2em auto; display: block; }')
-    html_parts.append('    figure img { width: 100%; height: auto; }')
-    html_parts.append('    figcaption { margin-top: 0.5em; font-style: italic; }')
-    html_parts.append('    .poem { margin: 1em 0; }')
-    html_parts.append('    .poem.center { text-align: center; }')
-    html_parts.append('    .poem.center .stanza { display: inline-block; text-align: left; }')
-    html_parts.append('    .poem-title { text-align: center; font-weight: bold; margin-bottom: 1em; }')
-    html_parts.append('    .stanza { margin-bottom: 1em; }')
-    html_parts.append('    .line { margin-top: 0; margin-bottom: 0; }')
-    html_parts.append('    .indent { margin-left: 2em; }')
-    html_parts.append('    .indent2 { margin-left: 4em; }')
-    html_parts.append('    .indent3 { margin-left: 6em; }')
-    html_parts.append('    .center { text-align: center; }')
-    html_parts.append('    .milestone { text-align: center; margin: 2em 0; }')
-    html_parts.append('    .milestone.stars::before { content: "*       *       *       *       *"; white-space: pre; }')
-    html_parts.append('    .milestone.space { height: 2em; }')
-    html_parts.append('    table { border-collapse: collapse; margin: 1em 0; }')
-    html_parts.append('    td, th { border: 1px solid #ccc; padding: 0.5em; }')
-    
-    # Append custom CSS if provided
-    if css_file:
-        with open(css_file, 'r', encoding='utf-8') as f:
-            css_content = f.read()
-        html_parts.append('')
-        html_parts.append('    /* Custom styles */')
-        # Indent each line of custom CSS by 4 spaces
-        for line in css_content.splitlines():
-            html_parts.append('    ' + line)
-    
-    html_parts.append('  </style>')
-    
-    html_parts.append('</head>')
-    html_parts.append('<body>')
-    
-    html_parts.append(f'<h1>{title}</h1>')
-    
-    # Process front matter
-    front = doc.find('.//tei:front', TEI_NS)
-    if front is not None:
-        for div in front.findall('tei:div', TEI_NS):
-            div_type = div.get('type', '')
-            div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
-            
-            # Build opening div tag
-            if div_id and div_type:
-                html_parts.append(f'<div id="{div_id}" class="{div_type}">')
-            elif div_id:
-                html_parts.append(f'<div id="{div_id}">')
-            elif div_type:
-                html_parts.append(f'<div class="{div_type}">')
-            else:
-                html_parts.append('<div>')
-            
-            # Process heading if present
-            head = div.find('tei:head', TEI_NS)
-            if head is not None:
-                if div_id:
-                    html_parts.append(f'<h2 id="{div_id}">{process_text_content(head)}</h2>')
-                else:
-                    html_parts.append(f'<h2>{process_text_content(head)}</h2>')
-            
-            # Process all other child elements
-            for elem in div:
-                if not isinstance(elem.tag, str):
-                    continue
-                if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
-                    html_parts.append(process_element(elem))
-            
-            html_parts.append('</div>')
-    
-    # Process body
-    body = doc.find('.//tei:body', TEI_NS)
-    if body is not None:
-        for div in body.findall('tei:div', TEI_NS):
-            # Chapter/section heading
-            head = div.find('tei:head', TEI_NS)
-            div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
-            
-            if head is not None:
-                if div_id:
-                    html_parts.append(f'<h2 id="{div_id}">{process_text_content(head)}</h2>')
-                else:
-                    html_parts.append(f'<h2>{process_text_content(head)}</h2>')
-            
-            # Process all child elements
-            for elem in div:
-                if not isinstance(elem.tag, str):
-                    continue
-                if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
-                    html_parts.append(process_element(elem))
-    
-    # Process back matter
-    back = doc.find('.//tei:back', TEI_NS)
-    if back is not None:
-        for div in back.findall('tei:div', TEI_NS):
-            # Only process top-level divs in back
-            if div.getparent().tag == f"{{{TEI_NS['tei']}}}back":
-                div_type = div.get('type', '')
-                div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
-                
-                # Build opening div tag
-                if div_id and div_type:
-                    html_parts.append(f'<div id="{div_id}" class="{div_type}">')
-                elif div_id:
-                    html_parts.append(f'<div id="{div_id}">')
-                elif div_type:
-                    html_parts.append(f'<div class="{div_type}">')
-                else:
-                    html_parts.append('<div>')
-                
-                # Heading
-                head = div.find('tei:head', TEI_NS)
-                div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
-                
-                if head is not None:
-                    if div_id:
-                        html_parts.append(f'<h2 id="{div_id}">{process_text_content(head)}</h2>')
-                    else:
-                        html_parts.append(f'<h2>{process_text_content(head)}</h2>')
-                
-                # Process all child elements
-                for elem in div:
-                    if not isinstance(elem.tag, str):
-                        continue
-                    if elem.tag != f"{{{TEI_NS['tei']}}}head":
-                        html_parts.append(process_element(elem))
-                
-                html_parts.append('</div>')
-    
-    html_parts.append('</body>')
-    html_parts.append('</html>')
-    
+
+    # Parse the TEI document
+    doc = parse_tei(tei_file)
+
+    # Create renderer and traverser
+    renderer = HTMLRenderer(css_file=css_file)
+    traverser = TEITraverser(renderer)
+
+    # Render the document
+    html = traverser.traverse_document(doc)
+
     # Write output
     with open(output_file, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(html_parts))
+        f.write(html)
+
     print(f"HTML conversion complete: {output_file}")
-
-def process_element(elem, xhtml=False, id_map=None):
-    """Process a TEI element and return HTML string.
-    
-    Args:
-        elem: The element to process
-        xhtml: If True, generate XHTML-compliant output with self-closing tags
-    """
-    tag = elem.tag.replace(f"{{{TEI_NS['tei']}}}", '')
-    
-    if tag == 'p':
-        rend = elem.get('rend', '')
-        if rend:
-            return f'<p class="{rend}">{process_text_content(elem, xhtml=xhtml, id_map=id_map)}</p>'
-        else:
-            return f'<p>{process_text_content(elem, xhtml=xhtml, id_map=id_map)}</p>'
-    
-    elif tag == 'quote':
-        parent_tag = elem.getparent().tag.replace(f"{{{TEI_NS['tei']}}}", '')
-        if parent_tag in ['p', 'item', 'cell', 'note', 'head']:
-            # Inline quote - add smart quotes (U+201C and U+201D)
-            return '\u201c' + process_text_content(elem, xhtml=xhtml, id_map=id_map) + '\u201d'
-        else:
-            # Blockquote: output all block-level children recursively
-            block_children = [child for child in elem if child.tag.replace(f"{{{TEI_NS['tei']}}}", '') in ['p', 'lg', 'list', 'table', 'figure', 'div', 'quote']]
-            if block_children:
-                inner = '\n'.join(process_element(child, xhtml=xhtml, id_map=id_map) for child in block_children)
-                return f'<blockquote>\n{inner}\n</blockquote>'
-            else:
-                # fallback: treat as before
-                return f'<blockquote><p>{process_text_content(elem, xhtml=xhtml, id_map=id_map)}</p></blockquote>'
-    
-    elif tag == 'list':
-        items = []
-        for item in elem.findall('tei:item', TEI_NS):
-            items.append(f'  <li>{process_text_content(item, xhtml=xhtml, id_map=id_map)}</li>')
-        return '<ul>\n' + '\n'.join(items) + '\n</ul>'
-    
-    elif tag == 'table':
-        rows = []
-        for row in elem.findall('tei:row', TEI_NS):
-            cells = []
-            for cell in row.findall('tei:cell', TEI_NS):
-                cell_tag = 'th' if cell.get('role') == 'label' else 'td'
-                cells.append(f'    <{cell_tag}>{process_text_content(cell, xhtml=xhtml, id_map=id_map)}</{cell_tag}>')
-            rows.append('  <tr>\n' + '\n'.join(cells) + '\n  </tr>')
-        return '<table>\n' + '\n'.join(rows) + '\n</table>'
-    
-    elif tag == 'figure':
-        # Process figure with graphic
-        graphic = elem.find('tei:graphic', TEI_NS)
-        width = graphic.get('width', '') if graphic is not None else ''
-        rend = elem.get('rend', '')
-        
-        # Build opening figure tag with optional width and rend
-        parts = []
-        if width and rend:
-            parts.append(f'<figure class="{rend}" style="width: {width};">')
-        elif width:
-            parts.append(f'<figure style="width: {width};">')
-        elif rend:
-            parts.append(f'<figure class="{rend}">')
-        else:
-            parts.append('<figure>')
-        
-        if graphic is not None:
-            url = graphic.get('url', '')
-            
-            # Get alt text from figDesc
-            figdesc = elem.find('tei:figDesc', TEI_NS)
-            alt_text = ''.join(figdesc.itertext()).strip() if figdesc is not None else ''
-            if xhtml:
-                alt_text = html.escape(alt_text)
-            
-            if xhtml:
-                parts.append(f'  <img src="{url}" alt="{alt_text}"/>')
-            else:
-                parts.append(f'  <img src="{url}" alt="{alt_text}">')
-        
-        # Add caption from head
-        head = elem.find('tei:head', TEI_NS)
-        if head is not None:
-            parts.append(f'  <figcaption>{process_text_content(head, xhtml=xhtml, id_map=id_map)}</figcaption>')
-        
-        parts.append('</figure>')
-        return '\n'.join(parts)
-    
-    elif tag == 'lg':  # Line group (verse)
-        rend = elem.get('rend', '')
-        if rend:
-            parts = [f'<div class="poem {rend}">']
-        else:
-            parts = ['<div class="poem">']
-
-        for child in elem:
-            child_tag = child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
-            if child_tag == 'head':
-                parts.append(f'  <div class="poem-title">{process_text_content(child, xhtml=xhtml, id_map=id_map)}</div>')
-            elif child_tag == 'lg':
-                # Nested stanza
-                parts.append('  <div class="stanza">')
-                for stanza_child in child:
-                    stanza_child_tag = stanza_child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
-                    if stanza_child_tag == 'l':
-                        rend = stanza_child.get('rend', '')
-                        line_class = f'line {rend}' if rend else 'line'
-                        parts.append(f'    <div class="{line_class}">{process_text_content(stanza_child, xhtml=xhtml, id_map=id_map)}</div>')
-                    else:
-                        # Recursively process any block element in stanza
-                        stanza_html = process_element(stanza_child, xhtml=xhtml, id_map=id_map)
-                        for line in stanza_html.split('\n'):
-                            parts.append('    ' + line)
-                parts.append('  </div>')
-            elif child_tag == 'l':
-                rend = child.get('rend', '')
-                line_class = f'line {rend}' if rend else 'line'
-                parts.append(f'  <div class="{line_class}">{process_text_content(child, xhtml=xhtml, id_map=id_map)}</div>')
-            else:
-                # Recursively process any block element in lg
-                block_html = process_element(child, xhtml=xhtml, id_map=id_map)
-                for line in block_html.split('\n'):
-                    parts.append('  ' + line)
-
-        parts.append('</div>')
-        return '\n'.join(parts)
-    
-    elif tag == 'div':
-        # Nested div - process recursively
-        div_type = elem.get('type', '')
-        div_id = elem.get('{http://www.w3.org/XML/1998/namespace}id', '')
-        parts = []
-        
-        # Build opening div tag
-        if div_id and div_type:
-            parts.append(f'<div id="{div_id}" class="{div_type}">')
-        elif div_id:
-            parts.append(f'<div id="{div_id}">')
-        elif div_type:
-            parts.append(f'<div class="{div_type}">')
-        else:
-            parts.append('<div>')
-        
-        for child in elem:
-            parts.append(process_element(child, xhtml=xhtml, id_map=id_map))
-        
-        parts.append('</div>')
-        return '\n'.join(parts)
-    
-    elif tag == 'milestone':
-        # Section/thought break
-        rend = elem.get('rend', 'space')
-        return f'<div class="milestone {rend}"></div>'
-    
-    else:
-        # Default: just extract text
-        return process_text_content(elem, xhtml=xhtml, id_map=id_map)
-
-def process_text_content(elem, quote_depth=0, xhtml=False, id_map=None):
-    """Extract text content from element, processing inline markup.
-    
-    Args:
-        elem: The element to process
-        quote_depth: Current nesting depth of quotes (0 = not in quote, 1 = outer, 2 = inner, etc.)
-        xhtml: If True, generate XHTML-compliant output with self-closing tags and escaped HTML entities
-    """
-    import html
-    
-    result = ''
-    # Initialize text content
-    if elem.text:
-        if xhtml:
-            result = html.escape(elem.text)
-        else:
-            result = elem.text
-    
-    for child in elem:
-        tag = child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
-        
-        if tag == 'lb':
-            # Line break - self-closing tag
-            if xhtml:
-                result += '<br/>'
-            else:
-                result += '<br>'
-        
-        elif tag == 'quote':
-            # Recursively process quote content at next depth level
-            child_text = process_text_content(child, quote_depth + 1, xhtml)
-            # Alternate between double and single quotes
-            if quote_depth % 2 == 0:
-                # Even depth (0, 2, 4...): use double quotes
-                result += '\u201c' + child_text + '\u201d'
-            else:
-                # Odd depth (1, 3, 5...): use single quotes
-                result += '\u2018' + child_text + '\u2019'
-        
-        elif tag == 'hi':
-            rend = child.get('rend', 'italic')
-            child_text = ''.join(child.itertext())
-            if xhtml:
-                child_text = html.escape(child_text)
-            if rend == 'italic':
-                result += f'<i>{child_text}</i>'
-            elif rend == 'bold':
-                result += f'<b>{child_text}</b>'
-            else:
-                result += f'<span class="{rend}">{child_text}</span>'
-        
-        elif tag == 'emph':
-            child_text = ''.join(child.itertext())
-            if xhtml:
-                child_text = html.escape(child_text)
-            result += f'<em>{child_text}</em>'
-        
-        elif tag == 'ref':
-            target = child.get('target', '#')
-            # Handle cross-references for EPUB (multi-file) vs HTML (single file)
-            if id_map and not target.startswith(('#', 'http://', 'https://', '//')):
-                # For EPUB, check if target ID exists in another file
-                if target in id_map:
-                    target_file = id_map[target]
-                    target = f'{target_file}#{target}'
-                else:
-                    # ID not found, assume it's in current file
-                    target = '#' + target
-            elif not target.startswith(('#', 'http://', 'https://', '//')):
-                # For HTML/single file, add # prefix
-                target = '#' + target
-            child_text = ''.join(child.itertext())
-            if xhtml:
-                child_text = html.escape(child_text)
-            result += f'<a href="{target}">{child_text}</a>'
-        
-        elif tag == 'note':
-            child_text = ''.join(child.itertext())
-            if xhtml:
-                child_text = html.escape(child_text)
-            result += f'<sup>[{child_text}]</sup>'
-        
-        elif tag == 'foreign':
-            child_text = ''.join(child.itertext())
-            if xhtml:
-                child_text = html.escape(child_text)
-            result += f'<i>{child_text}</i>'
-        
-        elif tag == 'title':
-            child_text = ''.join(child.itertext())
-            if xhtml:
-                child_text = html.escape(child_text)
-            result += f'<i>{child_text}</i>'
-        
-        else:
-            child_text = ''.join(child.itertext())
-            if xhtml:
-                child_text = html.escape(child_text)
-            result += child_text
-        
-        if child.tail:
-            if xhtml:
-                result += html.escape(child.tail)
-            else:
-                result += child.tail
-    
-    return result
-
