@@ -15,7 +15,7 @@ import html
 
 from .common import parse_tei, get_title, TEI_NS
 from .renderers.epub_renderer import EPUBRenderer
-from .epub_image_utils import collect_images, process_images
+from .epub_image_utils import collect_graphic_urls, copy_images_to_epub
 
 
 def convert(tei_file, output_file):
@@ -50,9 +50,10 @@ def convert(tei_file, output_file):
         # Process images
         image_map = {}
         input_dir = os.path.dirname(os.path.abspath(tei_file))
-        images = collect_images(doc, input_dir)
-        if images:
-            image_map = process_images(images, oebps)
+        image_urls = collect_graphic_urls(doc, input_dir)
+        if image_urls:
+            images_dir = os.path.join(oebps, 'images')
+            image_map = copy_images_to_epub(image_urls, input_dir, images_dir)
 
         # Create CSS file
         css_content = create_css()
