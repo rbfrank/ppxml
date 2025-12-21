@@ -149,22 +149,19 @@ class TextRenderer(BaseRenderer):
         # Normalize whitespace (collapse internal line breaks)
         normalized = ' '.join(text.split())
 
-        # Calculate effective line width considering indentation
-        effective_width = self.line_width - len(context.current_indent)
-
-        # Wrap text
+        # Wrap text with indentation
+        # Use textwrap's indent parameters so it accounts for indent in width calculation
         wrapped = textwrap.fill(
             normalized,
-            width=effective_width,
+            width=self.line_width,
+            initial_indent=context.current_indent,
+            subsequent_indent=context.current_indent,
             break_long_words=False,
             break_on_hyphens=False
         )
 
-        # Apply indentation
-        lines = []
-        for line in wrapped.split('\n'):
-            lines.append(context.current_indent + line)
-
+        # Split into lines
+        lines = wrapped.split('\n')
         lines.append('')  # Blank line after paragraph
         return lines
 
@@ -207,18 +204,17 @@ class TextRenderer(BaseRenderer):
                 return []
 
             normalized = ' '.join(text.split())
-            effective_width = self.line_width - len(child_context.current_indent)
 
             wrapped = textwrap.fill(
                 normalized,
-                width=effective_width,
+                width=self.line_width,
+                initial_indent=child_context.current_indent,
+                subsequent_indent=child_context.current_indent,
                 break_long_words=False,
                 break_on_hyphens=False
             )
 
-            lines = []
-            for line in wrapped.split('\n'):
-                lines.append(child_context.current_indent + line)
+            lines = wrapped.split('\n')
             lines.append('')
             return lines
 
@@ -343,13 +339,12 @@ class TextRenderer(BaseRenderer):
             item_context = child_context.with_parent('item')
             item_text = self._extract_text_with_emphasis(item, item_context).strip()
             if item_text:
-                # Calculate indentation
+                # Use textwrap with indent parameters
                 indent = context.current_indent
-                effective_width = self.line_width - len(indent) - 4  # Account for bullet
 
                 wrapped = textwrap.fill(
                     item_text,
-                    width=effective_width,
+                    width=self.line_width,
                     initial_indent=indent + '  • ',
                     subsequent_indent=indent + '    ',
                     break_long_words=False,
@@ -405,16 +400,16 @@ class TextRenderer(BaseRenderer):
             caption = self.extract_plain_text(head).strip()
             if caption:
                 indent = context.current_indent
-                effective_width = self.line_width - len(indent)
 
                 wrapped = textwrap.fill(
                     f'[Illustration: {caption}]',
-                    width=effective_width,
+                    width=self.line_width,
+                    initial_indent=indent,
+                    subsequent_indent=indent,
                     break_long_words=False,
                     break_on_hyphens=False
                 )
-                for line in wrapped.split('\n'):
-                    lines.append(indent + line)
+                lines.extend(wrapped.split('\n'))
             else:
                 lines.append(context.current_indent + '[Illustration]')
         else:
