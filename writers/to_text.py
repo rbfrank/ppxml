@@ -98,7 +98,7 @@ def convert(tei_file, output_file, line_width=72):
     
     print(f"Text conversion complete: {output_file}")
 
-def process_element(elem, output_lines, line_width):
+def process_element(elem, output_lines, line_width, indent=''):
     """Process a TEI element and add to output_lines."""
     elem_tag = elem.tag.replace(f"{{{TEI_NS['tei']}}}", '')
     
@@ -130,21 +130,10 @@ def process_element(elem, output_lines, line_width):
     
     elif elem_tag == 'figure':
         # Get caption from head element
-        """Process a TEI element and add to output_lines.
-    
-        Args:
-            elem: The TEI element to process
-            output_lines: List to store output lines
-            line_width: Width for line wrapping
-            indent: Indentation string for nested elements
-        """
-        indent = ''  # Default indent is empty
-    
-        elem_tag = elem.tag.replace(f"{{{TEI_NS['tei']}}}", '')
+        head = elem.find('tei:head', TEI_NS)
         if head is not None:
             caption = ''.join(head.itertext()).strip()
             if caption:
-                # Wrap with [Illustration: caption]
                 wrapped = textwrap.fill(f'[Illustration: {caption}]',
                                       width=line_width,
                                       break_long_words=False,
