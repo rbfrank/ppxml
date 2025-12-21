@@ -424,5 +424,7 @@ class TestTextRenderer:
 
         # The signature should be right-aligned within the narrowed blockquote
         # At indent_level=2, effective_width = 72 - 8 = 64
-        # So "Author" (6 chars) should start at position 8 + (64-6) = 66
-        assert sig_line == '        ' + ' ' * (64 - 6) + 'Author'
+        # indent = 8, text = 6, padding = 64 - 8 - 6 = 50
+        # Total line: 8 (indent) + 50 (padding) + 6 (text) = 64 chars
+        assert sig_line == '        ' + ' ' * 50 + 'Author'
+        assert len(sig_line) == 64
