@@ -1,11 +1,11 @@
 # ppxml
 
 Bookcove's TEI converter (restricted subset)
-converts TEI XML to text, HTML (EPUB3 and LaTeX in development).
+converts TEI XML to text, HTML, and EPUB3.
 
 ## features
 
-- Convert TEI XML to multiple formats (HTML, plain text)
+- Convert TEI XML to multiple formats (HTML, plain text, EPUB3)
 - Support for CSS styling in HTML/EPUB output
 - Restricted but practical TEI element set (see `element-set.md`)
 
@@ -65,9 +65,10 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 cd examples/emmylou
 python ../../ppxml.py emmylou.xml emmylou.txt
 python ../../ppxml.py emmylou.xml emmylou.html
+python ../../ppxml.py emmylou.xml emmylou.epub
 ```
 
-That will generate `emmylou.txt` and `emmylou.html` in the `examples/emmylou/` directory.
+That will generate `emmylou.txt`, `emmylou.html`, and `emmylou.epub` in the `examples/emmylou/` directory.
 
 Note: Python must include the lxml libraries to run `ppxml.py`.
 
@@ -84,9 +85,5 @@ of cloning the repository.
 
 - **HTML** - Web pages with optional CSS styling
 - **Plain Text** - Formatted text with optional line width
-
-## output formats in development
-
-- **LaTeX** - For PDF generation (requires pdflatex)
-- **EPUB3** - Electronic book format
+- **EPUB3** - Electronic book format with XHTML chapters
 
