@@ -150,10 +150,11 @@ class TextRenderer(BaseRenderer):
         normalized = ' '.join(text.split())
 
         # Wrap text with indentation
-        # Use textwrap's indent parameters so it accounts for indent in width calculation
+        # Reduce width for nested contexts to create true narrowing effect
+        effective_width = self.line_width - (context.indent_level * 4)
         wrapped = textwrap.fill(
             normalized,
-            width=self.line_width,
+            width=effective_width,
             initial_indent=context.current_indent,
             subsequent_indent=context.current_indent,
             break_long_words=False,
@@ -205,9 +206,10 @@ class TextRenderer(BaseRenderer):
 
             normalized = ' '.join(text.split())
 
+            effective_width = self.line_width - (child_context.indent_level * 4)
             wrapped = textwrap.fill(
                 normalized,
-                width=self.line_width,
+                width=effective_width,
                 initial_indent=child_context.current_indent,
                 subsequent_indent=child_context.current_indent,
                 break_long_words=False,
@@ -341,10 +343,11 @@ class TextRenderer(BaseRenderer):
             if item_text:
                 # Use textwrap with indent parameters
                 indent = context.current_indent
+                effective_width = self.line_width - (context.indent_level * 4)
 
                 wrapped = textwrap.fill(
                     item_text,
-                    width=self.line_width,
+                    width=effective_width,
                     initial_indent=indent + '  • ',
                     subsequent_indent=indent + '    ',
                     break_long_words=False,
@@ -400,10 +403,11 @@ class TextRenderer(BaseRenderer):
             caption = self.extract_plain_text(head).strip()
             if caption:
                 indent = context.current_indent
+                effective_width = self.line_width - (context.indent_level * 4)
 
                 wrapped = textwrap.fill(
                     f'[Illustration: {caption}]',
-                    width=self.line_width,
+                    width=effective_width,
                     initial_indent=indent,
                     subsequent_indent=indent,
                     break_long_words=False,
