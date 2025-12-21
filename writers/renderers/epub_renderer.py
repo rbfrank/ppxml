@@ -76,7 +76,7 @@ class EPUBRenderer(HTMLRenderer):
 
         # Add chapter heading if present
         if head is not None:
-            div_id = div.get('{http://www.w3.org/1998/namespace}id', '')
+            div_id = div.get('{http://www.w3.org/XML/1998/namespace}id', '')
             if div_id:
                 heading_text = self.extract_plain_text(head).strip()
                 parts.append(f'<h2 id="{html.escape(div_id)}">{html.escape(heading_text)}</h2>')
