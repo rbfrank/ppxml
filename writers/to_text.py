@@ -130,7 +130,17 @@ def process_element(elem, output_lines, line_width):
     
     elif elem_tag == 'figure':
         # Get caption from head element
-        head = elem.find('tei:head', TEI_NS)
+        """Process a TEI element and add to output_lines.
+    
+        Args:
+            elem: The TEI element to process
+            output_lines: List to store output lines
+            line_width: Width for line wrapping
+            indent: Indentation string for nested elements
+        """
+        indent = ''  # Default indent is empty
+    
+        elem_tag = elem.tag.replace(f"{{{TEI_NS['tei']}}}", '')
         if head is not None:
             caption = ''.join(head.itertext()).strip()
             if caption:
