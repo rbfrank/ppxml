@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Nested Quotes Test</title>
+      </titleStmt>
+      <publicationStmt>
+        <p>Test publication</p>
+      </publicationStmt>
+      <sourceDesc>
+        <p>Test source</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="chapter">
+        <head>Quote Recursion Test</head>
+
+        <!-- Inline nested quotes -->
+        <p>She said <quote>He said <quote>Hello</quote> to me</quote> yesterday.</p>
+
+        <!-- Block quote with nested inline quotes -->
+        <quote>
+          <p>Outer quote with <quote>inner quote</quote> inside.</p>
+        </quote>
+
+        <!-- Block quote with multiple paragraphs -->
+        <quote>
+          <p>First paragraph of blockquote.</p>
+          <p>Second paragraph of blockquote.</p>
+        </quote>
+
+        <!-- Deeply nested block and inline quotes -->
+        <quote>
+          <p>Level 1: <quote>Level 2: <quote>Level 3</quote></quote></p>
+        </quote>
+      </div>
+    </body>
+  </text>
+</TEI>

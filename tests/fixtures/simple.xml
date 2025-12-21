@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Simple Test Document</title>
+      </titleStmt>
+      <publicationStmt>
+        <p>Test publication</p>
+      </publicationStmt>
+      <sourceDesc>
+        <p>Test source</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="chapter">
+        <head>Test Chapter</head>
+        <p>This is a simple paragraph.</p>
+        <p>This is another paragraph with <hi rend="italic">italic text</hi>.</p>
+      </div>
+    </body>
+  </text>
+</TEI>

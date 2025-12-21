@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Poetry Test</title>
+      </titleStmt>
+      <publicationStmt>
+        <p>Test publication</p>
+      </publicationStmt>
+      <sourceDesc>
+        <p>Test source</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="chapter">
+        <head>Poetry Test</head>
+
+        <!-- Simple poem -->
+        <lg>
+          <head>A Simple Poem</head>
+          <l>First line of verse</l>
+          <l>Second line of verse</l>
+        </lg>
+
+        <!-- Poem with stanzas -->
+        <lg rend="center">
+          <head>Poem with Stanzas</head>
+          <lg>
+            <l>First stanza, first line</l>
+            <l rend="indent">Indented second line</l>
+          </lg>
+          <lg>
+            <l>Second stanza, first line</l>
+            <l>Second stanza, second line</l>
+          </lg>
+        </lg>
+
+        <!-- Poetry in blockquote (the key recursion test!) -->
+        <quote>
+          <lg>
+            <l>Poetry inside a blockquote</l>
+            <l>Should maintain structure</l>
+          </lg>
+        </quote>
+      </div>
+    </body>
+  </text>
+</TEI>
