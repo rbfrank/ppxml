@@ -263,14 +263,48 @@ def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None, i
             if tag == 'quote':
                 parent_tag = elem.getparent().tag.replace(f"{{{TEI_NS['tei']}}}", '')
                 if parent_tag not in ['p', 'item', 'cell', 'note', 'head']:
-                    p_elems = [child for child in elem if child.tag.replace(f"{{{TEI_NS['tei']}}}", '') == 'p']
-                    if p_elems:
-                        inner = '\n'.join(process_element(p, xhtml=True, id_map=id_map) for p in p_elems)
+                    block_children = [child for child in elem if child.tag.replace(f"{{{TEI_NS['tei']}}}", '') in ['p', 'lg', 'list', 'table', 'figure', 'div', 'quote']]
+                    if block_children:
+                        inner = '\n'.join(process_element(child, xhtml=True, id_map=id_map) for child in block_children)
                         html_out = f'<blockquote>\n{inner}\n</blockquote>'
                     else:
                         html_out = process_element(elem, xhtml=True, id_map=id_map)
                 else:
                     html_out = process_element(elem, xhtml=True, id_map=id_map)
+            elif tag == 'lg':
+                # Recursively process all children of <lg> (line group)
+                rend = elem.get('rend', '')
+                if rend:
+                    poem_parts = [f'<div class="poem {rend}">']
+                else:
+                    poem_parts = ['<div class="poem">']
+                for child in elem:
+                    child_tag = child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
+                    if child_tag == 'head':
+                        poem_parts.append(f'  <div class="poem-title">{process_text_content(child, xhtml=True, id_map=id_map)}</div>')
+                    elif child_tag == 'lg':
+                        poem_parts.append('  <div class="stanza">')
+                        for stanza_child in child:
+                            stanza_child_tag = stanza_child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
+                            if stanza_child_tag == 'l':
+                                rend = stanza_child.get('rend', '')
+                                line_class = f'line {rend}' if rend else 'line'
+                                poem_parts.append(f'    <div class="{line_class}">{process_text_content(stanza_child, xhtml=True, id_map=id_map)}</div>')
+                            else:
+                                stanza_html = process_element(stanza_child, xhtml=True, id_map=id_map)
+                                for line in stanza_html.split('\n'):
+                                    poem_parts.append('    ' + line)
+                        poem_parts.append('  </div>')
+                    elif child_tag == 'l':
+                        rend = child.get('rend', '')
+                        line_class = f'line {rend}' if rend else 'line'
+                        poem_parts.append(f'  <div class="{line_class}">{process_text_content(child, xhtml=True, id_map=id_map)}</div>')
+                    else:
+                        block_html = process_element(child, xhtml=True, id_map=id_map)
+                        for line in block_html.split('\n'):
+                            poem_parts.append('  ' + line)
+                poem_parts.append('</div>')
+                html_out = '\n'.join(poem_parts)
             else:
                 html_out = process_element(elem, xhtml=True, id_map=id_map)
             # Replace image src if needed

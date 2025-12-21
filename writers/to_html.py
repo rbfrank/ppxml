@@ -212,10 +212,10 @@ def process_element(elem, xhtml=False, id_map=None):
             # Inline quote - add smart quotes (U+201C and U+201D)
             return '\u201c' + process_text_content(elem, xhtml=xhtml, id_map=id_map) + '\u201d'
         else:
-            # Blockquote: output each child <p> as a separate <p> inside <blockquote>
-            p_elems = [child for child in elem if child.tag.replace(f"{{{TEI_NS['tei']}}}", '') == 'p']
-            if p_elems:
-                inner = '\n'.join(process_element(p, xhtml=xhtml, id_map=id_map) for p in p_elems)
+            # Blockquote: output all block-level children recursively
+            block_children = [child for child in elem if child.tag.replace(f"{{{TEI_NS['tei']}}}", '') in ['p', 'lg', 'list', 'table', 'figure', 'div', 'quote']]
+            if block_children:
+                inner = '\n'.join(process_element(child, xhtml=xhtml, id_map=id_map) for child in block_children)
                 return f'<blockquote>\n{inner}\n</blockquote>'
             else:
                 # fallback: treat as before
@@ -282,32 +282,36 @@ def process_element(elem, xhtml=False, id_map=None):
             parts = [f'<div class="poem {rend}">']
         else:
             parts = ['<div class="poem">']
-        
-        # Check for title
-        head = elem.find('tei:head', TEI_NS)
-        if head is not None:
-            parts.append(f'  <div class="poem-title">{process_text_content(head, xhtml=xhtml, id_map=id_map)}</div>')
-        
-        # Check for nested stanzas
-        nested_lg = elem.findall('tei:lg', TEI_NS)
-        if nested_lg:
-            # Multiple stanzas
-            for stanza in nested_lg:
+
+        for child in elem:
+            child_tag = child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
+            if child_tag == 'head':
+                parts.append(f'  <div class="poem-title">{process_text_content(child, xhtml=xhtml, id_map=id_map)}</div>')
+            elif child_tag == 'lg':
+                # Nested stanza
                 parts.append('  <div class="stanza">')
-                for line in stanza.findall('tei:l', TEI_NS):
-                    rend = line.get('rend', '')
-                    line_class = f'line {rend}' if rend else 'line'
-                    parts.append(f'    <div class="{line_class}">{process_text_content(line, xhtml=xhtml, id_map=id_map)}</div>')
+                for stanza_child in child:
+                    stanza_child_tag = stanza_child.tag.replace(f"{{{TEI_NS['tei']}}}", '')
+                    if stanza_child_tag == 'l':
+                        rend = stanza_child.get('rend', '')
+                        line_class = f'line {rend}' if rend else 'line'
+                        parts.append(f'    <div class="{line_class}">{process_text_content(stanza_child, xhtml=xhtml, id_map=id_map)}</div>')
+                    else:
+                        # Recursively process any block element in stanza
+                        stanza_html = process_element(stanza_child, xhtml=xhtml, id_map=id_map)
+                        for line in stanza_html.split('\n'):
+                            parts.append('    ' + line)
                 parts.append('  </div>')
-        else:
-            # Single stanza - direct lines
-            parts.append('  <div class="stanza">')
-            for line in elem.findall('tei:l', TEI_NS):
-                rend = line.get('rend', '')
+            elif child_tag == 'l':
+                rend = child.get('rend', '')
                 line_class = f'line {rend}' if rend else 'line'
-                parts.append(f'    <div class="{line_class}">{process_text_content(line, xhtml=xhtml, id_map=id_map)}</div>')
-            parts.append('  </div>')
-        
+                parts.append(f'  <div class="{line_class}">{process_text_content(child, xhtml=xhtml, id_map=id_map)}</div>')
+            else:
+                # Recursively process any block element in lg
+                block_html = process_element(child, xhtml=xhtml, id_map=id_map)
+                for line in block_html.split('\n'):
+                    parts.append('  ' + line)
+
         parts.append('</div>')
         return '\n'.join(parts)
     
