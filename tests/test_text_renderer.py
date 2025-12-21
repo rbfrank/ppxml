@@ -102,10 +102,12 @@ class TestTextRenderer:
         assert 'Quoted paragraph.' in result[0]
 
     def test_nested_block_quotes(self):
-        """Test nested block quotes have deeper indentation."""
-        xml = '''<quote xmlns="http://www.tei-c.org/ns/1.0">
+        """Test nested block quotes have deeper indentation and narrower width."""
+        # Create a long paragraph to test wrapping
+        long_text = ' '.join(['word'] * 20)  # Long enough to wrap
+        xml = f'''<quote xmlns="http://www.tei-c.org/ns/1.0">
             <quote>
-                <p>Nested quote.</p>
+                <p>{long_text}</p>
             </quote>
         </quote>'''
         elem = etree.fromstring(xml)
@@ -116,6 +118,18 @@ class TestTextRenderer:
         # Should be double-indented (8 spaces)
         has_double_indent = any(line.startswith('        ') for line in result if line.strip())
         assert has_double_indent
+
+        # Check that lines respect narrower width (72 - 8 = 64 chars effective)
+        # Each line including indent should be <= 72 chars total
+        for line in result:
+            if line.strip():  # Skip blank lines
+                assert len(line) <= 72, f"Line exceeds 72 chars: {len(line)} - '{line}'"
+                # The text portion (after indent) should be narrower
+                text_portion = line.lstrip()
+                indent_len = len(line) - len(text_portion)
+                # Verify indent is what we expect (8 spaces for double-nested)
+                if 'word' in line:
+                    assert indent_len == 8, f"Expected 8 spaces indent, got {indent_len}"
 
     def test_list_rendering(self):
         """Test list with bullet points."""
