@@ -157,12 +157,9 @@ class BaseRenderer(ABC):
             child_tag = self.strip_namespace(child.tag)
 
             if child_tag not in skip_tags:
-                # Update context with this element as parent
-                child_rend = child.get('rend', '')
-                child_context = context.with_parent(child_tag, child_rend)
-
-                # Recursively render the child
-                result = traverser.traverse_element(child, child_context)
+                # Recursively render the child with current context
+                # (The child's renderer will update context as needed for its own children)
+                result = traverser.traverse_element(child, context)
                 if result:  # Only append non-empty results
                     results.append(result)
 
