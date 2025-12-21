@@ -258,7 +258,21 @@ def create_chapter_file(oebps, filename, div, book_title, doc, image_map=None, i
         if not isinstance(elem.tag, str):
             continue
         if elem.tag != f"{{{TEI_NS['tei']}}}head":  # Skip head, already processed
-            html_out = process_element(elem, xhtml=True, id_map=id_map)
+            # Patch: handle <quote> with multiple <p> children for EPUB blockquotes
+            tag = elem.tag.replace(f"{{{TEI_NS['tei']}}}", '')
+            if tag == 'quote':
+                parent_tag = elem.getparent().tag.replace(f"{{{TEI_NS['tei']}}}", '')
+                if parent_tag not in ['p', 'item', 'cell', 'note', 'head']:
+                    p_elems = [child for child in elem if child.tag.replace(f"{{{TEI_NS['tei']}}}", '') == 'p']
+                    if p_elems:
+                        inner = '\n'.join(process_element(p, xhtml=True, id_map=id_map) for p in p_elems)
+                        html_out = f'<blockquote>\n{inner}\n</blockquote>'
+                    else:
+                        html_out = process_element(elem, xhtml=True, id_map=id_map)
+                else:
+                    html_out = process_element(elem, xhtml=True, id_map=id_map)
+            else:
+                html_out = process_element(elem, xhtml=True, id_map=id_map)
             # Replace image src if needed
             if image_map:
                 import re

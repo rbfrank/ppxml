@@ -149,15 +149,28 @@ def process_element(elem, output_lines, line_width):
     elif elem_tag == 'quote':
         # Block quote (not inside a paragraph)
         if elem.getparent().tag == f"{{{TEI_NS['tei']}}}div":
-            text = extract_text_with_emphasis(elem).strip()
-            if text:
-                wrapped = textwrap.fill(text, width=line_width-4,
-                                      initial_indent='    ',
-                                      subsequent_indent='    ',
-                                      break_long_words=False,
-                                      break_on_hyphens=False)
-                output_lines.append(wrapped)
-                output_lines.append('')
+            p_elems = [child for child in elem if child.tag.replace(f"{{{TEI_NS['tei']}}}", '') == 'p']
+            if p_elems:
+                for p in p_elems:
+                    text = extract_text_with_emphasis(p).strip()
+                    if text:
+                        wrapped = textwrap.fill(text, width=line_width-4,
+                                              initial_indent='    ',
+                                              subsequent_indent='    ',
+                                              break_long_words=False,
+                                              break_on_hyphens=False)
+                        output_lines.append(wrapped)
+                        output_lines.append('')
+            else:
+                text = extract_text_with_emphasis(elem).strip()
+                if text:
+                    wrapped = textwrap.fill(text, width=line_width-4,
+                                          initial_indent='    ',
+                                          subsequent_indent='    ',
+                                          break_long_words=False,
+                                          break_on_hyphens=False)
+                    output_lines.append(wrapped)
+                    output_lines.append('')
     
     elif elem_tag == 'table':
         # Simple table rendering for text

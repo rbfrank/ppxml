@@ -207,14 +207,19 @@ def process_element(elem, xhtml=False, id_map=None):
             return f'<p>{process_text_content(elem, xhtml=xhtml, id_map=id_map)}</p>'
     
     elif tag == 'quote':
-        # Check if it's a block quote (standalone) or inline
         parent_tag = elem.getparent().tag.replace(f"{{{TEI_NS['tei']}}}", '')
-        # Inline if parent is p, item, cell, or other inline containers
         if parent_tag in ['p', 'item', 'cell', 'note', 'head']:
             # Inline quote - add smart quotes (U+201C and U+201D)
             return '\u201c' + process_text_content(elem, xhtml=xhtml, id_map=id_map) + '\u201d'
         else:
-            return f'<blockquote><p>{process_text_content(elem, xhtml=xhtml, id_map=id_map)}</p></blockquote>'
+            # Blockquote: output each child <p> as a separate <p> inside <blockquote>
+            p_elems = [child for child in elem if child.tag.replace(f"{{{TEI_NS['tei']}}}", '') == 'p']
+            if p_elems:
+                inner = '\n'.join(process_element(p, xhtml=xhtml, id_map=id_map) for p in p_elems)
+                return f'<blockquote>\n{inner}\n</blockquote>'
+            else:
+                # fallback: treat as before
+                return f'<blockquote><p>{process_text_content(elem, xhtml=xhtml, id_map=id_map)}</p></blockquote>'
     
     elif tag == 'list':
         items = []
