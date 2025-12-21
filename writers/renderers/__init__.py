@@ -8,5 +8,6 @@ This package contains renderer implementations for different output formats:
 """
 
 from .html_renderer import HTMLRenderer
+from .text_renderer import TextRenderer
 
-__all__ = ['HTMLRenderer']
+__all__ = ['HTMLRenderer', 'TextRenderer']
