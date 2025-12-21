@@ -398,3 +398,31 @@ class TestTextRenderer:
         assert len(result) == 2  # Text + blank
         assert result[0].endswith('— Author Name')
         assert result[0].startswith(' ')  # Has padding
+
+    def test_signed_in_nested_blockquote(self):
+        """Test signed element in nested blockquote is right-aligned within narrowed width."""
+        xml = '''<quote xmlns="http://www.tei-c.org/ns/1.0">
+            <p>Outer quote</p>
+            <quote>
+                <p>Inner quote</p>
+                <signed>Author</signed>
+            </quote>
+        </quote>'''
+        elem = etree.fromstring(xml)
+        context = RenderContext(parent_tag='div')
+
+        result = self.renderer.render_quote(elem, context, self.traverser)
+
+        # Find the signature line
+        sig_line = [line for line in result if 'Author' in line][0]
+
+        # Should have 8 spaces of indent (2 levels x 4 spaces)
+        assert sig_line.startswith('        ')
+
+        # Total line length should not exceed 72
+        assert len(sig_line) <= 72
+
+        # The signature should be right-aligned within the narrowed blockquote
+        # At indent_level=2, effective_width = 72 - 8 = 64
+        # So "Author" (6 chars) should start at position 8 + (64-6) = 66
+        assert sig_line == '        ' + ' ' * (64 - 6) + 'Author'

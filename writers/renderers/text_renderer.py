@@ -446,11 +446,17 @@ class TextRenderer(BaseRenderer):
             return []
 
         # Right-align within the effective width
-        # The effective width accounts for indent level
+        # The effective width accounts for indent level and represents
+        # the total line length including indent, matching paragraph behavior
         effective_width = self.line_width - (context.indent_level * 4)
 
-        # Calculate padding to right-align within effective width
-        padding = max(0, effective_width - len(text))
+        # Use visual length to account for emphasis markers
+        visual_len = self._visual_length(text)
+
+        # Calculate padding needed within the effective width
+        # Total: indent + padding + text = effective_width
+        indent_len = len(context.current_indent)
+        padding = max(0, effective_width - indent_len - visual_len)
 
         # Add indent, then padding, then text
         lines = [context.current_indent + ' ' * padding + text, '']
