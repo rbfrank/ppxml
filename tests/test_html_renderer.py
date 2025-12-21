@@ -349,3 +349,16 @@ class TestHTMLRenderer:
         open_q, close_q = self.renderer.get_smart_quotes(2)
         assert open_q == '\u201c'
         assert close_q == '\u201d'
+
+    def test_signed_element(self):
+        """Test signed element renders as signature div."""
+        xml = '''<quote xmlns="http://www.tei-c.org/ns/1.0">
+            <p>I have a dream...</p>
+            <signed>Martin Luther King Jr.</signed>
+        </quote>'''
+        elem = etree.fromstring(xml)
+        context = RenderContext(parent_tag='div')
+
+        result = self.renderer.render_quote(elem, context, self.traverser)
+
+        assert '<div class="signature">Martin Luther King Jr.</div>' in result

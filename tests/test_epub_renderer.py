@@ -317,3 +317,17 @@ class TestEPUBRenderer:
         assert '\u201c' in result  # Opening double quote
         assert '\u201d' in result  # Closing double quote
         assert 'hello' in result
+
+    def test_signed_in_blockquote(self):
+        """Test signed element in EPUB chapter."""
+        xml = '''<div xmlns="http://www.tei-c.org/ns/1.0">
+            <quote>
+                <p>Quote text</p>
+                <signed>Author</signed>
+            </quote>
+        </div>'''
+        elem = etree.fromstring(xml)
+
+        result = self.renderer.render_chapter(elem, 'Book Title')
+
+        assert '<div class="signature">Author</div>' in result

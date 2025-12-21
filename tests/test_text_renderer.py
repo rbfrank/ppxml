@@ -385,3 +385,16 @@ class TestTextRenderer:
 
         ctx = ctx.with_indent(1)
         assert ctx.current_indent == '        '  # 8 spaces
+
+    def test_signed_element(self):
+        """Test signed element is right-aligned."""
+        xml = '''<signed xmlns="http://www.tei-c.org/ns/1.0">— Author Name</signed>'''
+        elem = etree.fromstring(xml)
+        context = RenderContext(parent_tag='quote')
+
+        result = self.renderer.render_signed(elem, context, self.traverser)
+
+        # Should be right-aligned (has leading spaces)
+        assert len(result) == 2  # Text + blank
+        assert result[0].endswith('— Author Name')
+        assert result[0].startswith(' ')  # Has padding

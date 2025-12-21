@@ -197,6 +197,7 @@ h2 { margin-top: 2em; }
 .bold { font-weight: bold; }
 .underline { text-decoration: underline; }
 .small-caps { font-variant: small-caps; }
+.signature { text-align: right; font-style: italic; margin-top: 0.5em; }
 blockquote { margin: 1em 2em; }
 figure { margin: 2em auto; width: 80%; max-width: 100%; text-align: center; }
 figure.left { float: left; margin: 0 2em 1em 0; width: 50%; max-width: 50%; }

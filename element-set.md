@@ -55,6 +55,9 @@
 
 ### Quotations and References
 - `<quote>` - Quotation (inline or block)
+- `<signed>` - Signature or attribution line (typically at the end of a quote or letter)
+  - HTML/EPUB: Renders as `<div class="signature">` (right-aligned, italic)
+  - Text: Right-aligned plain text
 - `<ref>` - Reference or link
   - Use `@target` for URLs: `<ref target="https://example.com">link text</ref>`
   - Use `@target` with `#` for internal links: `<ref target="#ch1">Chapter 1</ref>`
@@ -82,7 +85,7 @@
 - `<head>` - Caption for the figure (when used within `<figure>`)
 
 ## Total Count
-Approximately 33 elements - enough for most literary texts without overwhelming users.
+Approximately 34 elements - enough for most literary texts without overwhelming users.
 
 ## Common Attributes
 - `@type` - Specify types for various elements
@@ -128,8 +131,13 @@ Approximately 33 elements - enough for most literary texts without overwhelming 
         <p>However little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered the <hi rend="italic">rightful property</hi> of some one or other of their daughters.</p>
         
         <milestone rend="stars"/>
-        
+
         <p>The next morning brought a new development.</p>
+
+        <quote>
+          <p>I declare after all there is no enjoyment like reading!</p>
+          <signed>— Miss Bingley</signed>
+        </quote>
       </div>
     </body>
   </text>

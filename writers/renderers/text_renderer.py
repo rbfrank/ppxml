@@ -89,6 +89,8 @@ class TextRenderer(BaseRenderer):
             return self.render_figure(elem, context, traverser)
         elif tag == 'milestone':
             return self.render_milestone(elem, context, traverser)
+        elif tag == 'signed':
+            return self.render_signed(elem, context, traverser)
         else:
             # Unknown element - skip
             return []
@@ -184,7 +186,7 @@ class TextRenderer(BaseRenderer):
         block_children = [child for child in elem
                         if isinstance(child.tag, str) and
                         self.strip_namespace(child.tag) in
-                        ['p', 'lg', 'list', 'table', 'figure', 'div', 'quote']]
+                        ['p', 'lg', 'list', 'table', 'figure', 'div', 'quote', 'signed']]
 
         if block_children:
             lines = []
@@ -435,6 +437,22 @@ class TextRenderer(BaseRenderer):
         else:
             # Just blank lines for other types
             return ['', '']
+
+    def render_signed(self, elem: etree._Element, context: RenderContext,
+                     traverser: TEITraverser) -> List[str]:
+        """Render a signature line (right-aligned)."""
+        text = self._extract_text_with_emphasis(elem, context).strip()
+        if not text:
+            return []
+
+        # Right-align by padding with spaces
+        # Account for indent level
+        effective_width = self.line_width - (context.indent_level * 4)
+        text_with_indent = context.current_indent + text
+        padding = max(0, self.line_width - len(text_with_indent))
+
+        lines = [' ' * padding + text_with_indent, '']
+        return lines
 
     def _extract_text_with_emphasis(self, elem: etree._Element,
                                     context: RenderContext) -> str:
