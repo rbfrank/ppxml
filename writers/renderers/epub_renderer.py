@@ -13,6 +13,7 @@ from lxml import etree
 from .html_renderer import HTMLRenderer
 from ..core.context import RenderContext
 from ..core.traverser import TEITraverser
+from ..core.base_renderer import TEI_NS
 
 
 class EPUBRenderer(HTMLRenderer):
@@ -48,7 +49,7 @@ class EPUBRenderer(HTMLRenderer):
             Complete XHTML document as string
         """
         # Get chapter title from head element
-        head = div.find('tei:head', {'tei': 'http://www.tei-c.org/ns/1.0'})
+        head = div.find('tei:head', TEI_NS)
         chapter_title = self.extract_plain_text(head).strip() if head is not None else book_title
 
         # Create context with id_map
