@@ -445,13 +445,15 @@ class TextRenderer(BaseRenderer):
         if not text:
             return []
 
-        # Right-align by padding with spaces
-        # Account for indent level
+        # Right-align within the effective width
+        # The effective width accounts for indent level
         effective_width = self.line_width - (context.indent_level * 4)
-        text_with_indent = context.current_indent + text
-        padding = max(0, self.line_width - len(text_with_indent))
 
-        lines = [' ' * padding + text_with_indent, '']
+        # Calculate padding to right-align within effective width
+        padding = max(0, effective_width - len(text))
+
+        # Add indent, then padding, then text
+        lines = [context.current_indent + ' ' * padding + text, '']
         return lines
 
     def _extract_text_with_emphasis(self, elem: etree._Element,
