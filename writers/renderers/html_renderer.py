@@ -188,7 +188,7 @@ class HTMLRenderer(BaseRenderer):
                     traverser: TEITraverser) -> str:
         """Render a heading element."""
         # Determine heading level based on context
-        if context.parent_tag in ('div', 'front', 'back'):
+        if context.parent_tag in ('div', 'front', 'back', 'body'):
             # Chapter/section heading
             div_id = elem.getparent().get('{http://www.w3.org/XML/1998/namespace}id', '')
             if div_id:
