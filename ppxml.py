@@ -24,9 +24,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
 Examples:
-  python tei_convert.py book.xml book.html
-  python tei_convert.py book.xml book.txt 72
-  python tei_convert.py book.xml book.epub
+  python ppxml.py book.xml book.html
+  python ppxml.py book.xml book.txt
+  python ppxml.py book.xml book.txt 72
+  python ppxml.py book.xml book.epub
         '''
     )
     
