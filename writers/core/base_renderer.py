@@ -16,6 +16,10 @@ if TYPE_CHECKING:
 # TEI namespace
 TEI_NS = {'tei': 'http://www.tei-c.org/ns/1.0'}
 
+# Special token for em-dash (converted from -- in markup)
+# Using a Unicode private use character that won't appear in normal text
+EMDASH_TOKEN = '\uE000'
+
 
 class BaseRenderer(ABC):
     """
@@ -88,6 +92,24 @@ class BaseRenderer(ABC):
         else:
             # Odd depth (1, 3, 5...): use single quotes
             return ('\u2018', '\u2019')  # ' and '
+
+    def preprocess_text(self, text: str) -> str:
+        """
+        Preprocess text to convert em-dashes to token.
+
+        Converts both -- and — (U+2014) to EMDASH_TOKEN for consistent handling.
+
+        Args:
+            text: Raw text from XML
+
+        Returns:
+            Text with em-dashes converted to EMDASH_TOKEN
+        """
+        if text:
+            # Normalize both -- and Unicode em-dash to token
+            text = text.replace('--', EMDASH_TOKEN)
+            text = text.replace('\u2014', EMDASH_TOKEN)
+        return text
 
     def extract_plain_text(self, elem: etree._Element) -> str:
         """

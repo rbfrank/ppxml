@@ -10,7 +10,7 @@ import re
 from typing import List
 from lxml import etree
 
-from ..core.base_renderer import BaseRenderer, TEI_NS
+from ..core.base_renderer import BaseRenderer, TEI_NS, EMDASH_TOKEN
 from ..core.context import RenderContext
 from ..core.traverser import TEITraverser
 from ..common import get_title
@@ -33,6 +33,40 @@ class TextRenderer(BaseRenderer):
         """
         self.line_width = line_width
         self.title = ''
+
+    def extract_plain_text(self, elem: etree._Element) -> str:
+        """
+        Extract all text content from element with em-dash processing.
+
+        Overrides base method to handle -- conversion for text output.
+
+        Args:
+            elem: The XML element
+
+        Returns:
+            Plain text content with -- converted back from token
+        """
+        text = super().extract_plain_text(elem)
+        return self.process_text_for_output(text)
+
+    def process_text_for_output(self, text: str) -> str:
+        """
+        Process text for plain text output: convert -- to token, then token back to --.
+
+        This ensures consistent handling while allowing proper wrapping.
+
+        Args:
+            text: Raw text from XML
+
+        Returns:
+            Text with -- preserved for output
+        """
+        if not text:
+            return text
+        # Preprocess to convert -- to token, then token back to --
+        text = self.preprocess_text(text)
+        text = text.replace(EMDASH_TOKEN, '--')
+        return text
 
     def render_document_start(self, doc: etree._ElementTree) -> List[str]:
         """
@@ -480,7 +514,7 @@ class TextRenderer(BaseRenderer):
         result = ''
 
         if elem.text:
-            result = elem.text
+            result = self.process_text_for_output(elem.text)
 
         for child in elem:
             if not isinstance(child.tag, str):
@@ -525,7 +559,7 @@ class TextRenderer(BaseRenderer):
                 result += child_text
 
             if child.tail:
-                result += child.tail
+                result += self.process_text_for_output(child.tail)
 
         return result
 

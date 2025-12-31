@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Any
 from lxml import etree
 
-from ..core.base_renderer import BaseRenderer, TEI_NS
+from ..core.base_renderer import BaseRenderer, TEI_NS, EMDASH_TOKEN
 from ..core.context import RenderContext
 from ..core.traverser import TEITraverser
 from ..common import get_title
@@ -35,6 +35,38 @@ class HTMLRenderer(BaseRenderer):
         """
         self.css_file = css_file
         self.title = ''
+
+    def extract_plain_text(self, elem: etree._Element) -> str:
+        """
+        Extract all text content from element with em-dash processing.
+
+        Overrides base method to handle -- conversion.
+
+        Args:
+            elem: The XML element
+
+        Returns:
+            Plain text content with -- converted to em-dash character
+        """
+        text = super().extract_plain_text(elem)
+        return self.process_text_for_html(text)
+
+    def process_text_for_html(self, text: str) -> str:
+        """
+        Process text for HTML output: convert -- to em-dash character.
+
+        Args:
+            text: Raw text from XML
+
+        Returns:
+            Text with -- converted to em-dash (U+2014)
+        """
+        if not text:
+            return text
+        # Preprocess to convert -- to token, then token to actual em-dash character
+        text = self.preprocess_text(text)
+        text = text.replace(EMDASH_TOKEN, '\u2014')  # Em-dash character
+        return text
 
     def render_document_start(self, doc: etree._ElementTree) -> str:
         """
@@ -88,7 +120,7 @@ class HTMLRenderer(BaseRenderer):
     def _get_default_css(self) -> list:
         """Get default CSS rules as list of strings."""
         return [
-            '    body { max-width: 40em; margin: 2em auto; padding: 0 1em; font-family: serif; line-height: 1.6; }',
+            '    body { margin-left: 10%; margin-right: 10%; line-height: 1.25; }',
             '    h1 { text-align: center; }',
             '    h2 { margin-top: 2em; }',
             '    .italic { font-style: italic; }',
@@ -428,10 +460,11 @@ class HTMLRenderer(BaseRenderer):
 
         # Add initial text
         if elem.text:
+            text = self.process_text_for_html(elem.text)
             if context.xhtml:
-                result = html_module.escape(elem.text)
+                result = html_module.escape(text)
             else:
-                result = elem.text
+                result = text
 
         # Process child elements
         for child in elem:
@@ -521,9 +554,10 @@ class HTMLRenderer(BaseRenderer):
 
             # Add tail text
             if child.tail:
+                tail = self.process_text_for_html(child.tail)
                 if context.xhtml:
-                    result += html_module.escape(child.tail)
+                    result += html_module.escape(tail)
                 else:
-                    result += child.tail
+                    result += tail
 
         return result
