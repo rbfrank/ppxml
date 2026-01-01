@@ -1,6 +1,6 @@
 # ppxml
 
-Bookcove's TEI converter (restricted subset)
+BookCove's TEI converter (restricted subset)
 converts TEI XML to text, HTML, and EPUB3.
 
 ## features
