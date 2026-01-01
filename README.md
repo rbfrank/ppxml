@@ -81,6 +81,50 @@ of cloning the repository.
 - `element-set.md` - Complete list of supported TEI XML elements
 - https://bookcove.net - Additional documentation and resources
 
+## CSS styling
+
+ppxml supports custom CSS for both HTML and EPUB outputs using a directory-based structure.
+
+### format-specific CSS directories
+
+Create separate CSS files for HTML and EPUB formats in your project directory:
+
+```
+project/
+├── book.xml
+└── css/
+    ├── html/
+    │   └── custom.css    # HTML-specific styles
+    └── epub/
+        └── custom.css    # EPUB-specific styles
+```
+
+### multiple CSS files
+
+You can use multiple CSS files in each directory. They will be concatenated in **alphabetical order**:
+
+```
+project/
+└── css/
+    ├── html/
+    │   ├── 01-base.css
+    │   ├── 02-layout.css
+    │   └── 03-theme.css
+    └── epub/
+        └── styles.css
+```
+
+### CSS behavior
+
+- **HTML**: Custom CSS is appended to default styles and embedded in the HTML output
+- **EPUB**: Custom CSS is appended to default styles in the EPUB's `styles.css` file
+- **Discovery**: CSS files must be in `css/html/` or `css/epub/` directories relative to your XML file
+- **Cascading**: Custom CSS rules override default styles due to CSS cascade order
+
+### examples
+
+Both example projects (`emmylou/` and `firebrand/`) include CSS files in the new directory structure that demonstrate custom styling.
+
 ## supported output formats
 
 - **HTML** - Web pages with optional CSS styling

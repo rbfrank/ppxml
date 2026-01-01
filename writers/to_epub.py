@@ -30,6 +30,14 @@ def convert(tei_file, output_file):
     doc = parse_tei(tei_file)
     title = get_title(doc)
 
+    # Discover custom CSS files for EPUB
+    from .common import find_css_files, read_css_files
+    css_paths = find_css_files(tei_file, 'epub')
+    custom_css_content = read_css_files(css_paths) if css_paths else None
+
+    if css_paths:
+        print(f"Auto-detected CSS files: {', '.join([os.path.basename(p) for p in css_paths])}")
+
     # Create temporary directory for EPUB assembly
     temp_dir = tempfile.mkdtemp(prefix='epub_')
 
@@ -55,8 +63,8 @@ def convert(tei_file, output_file):
             images_dir = os.path.join(oebps, 'images')
             image_map = copy_images_to_epub(image_urls, input_dir, images_dir)
 
-        # Create CSS file
-        css_content = create_css()
+        # Create CSS file with custom styles appended
+        css_content = create_css(custom_css_content)
         with open(os.path.join(oebps, 'styles.css'), 'w', encoding='utf-8') as f:
             f.write(css_content)
 
@@ -188,8 +196,16 @@ def create_container_xml(meta_inf):
         f.write(container)
 
 
-def create_css():
-    """Create CSS stylesheet."""
+def create_css(custom_css_content=None):
+    """
+    Create CSS stylesheet with optional custom styles appended.
+
+    Args:
+        custom_css_content: Optional string containing custom CSS rules
+
+    Returns:
+        Complete CSS content as string
+    """
     css = '''body { max-width: 40em; margin: 2em auto; padding: 0 1em; font-family: serif; line-height: 1.6; }
 h1 { text-align: center; }
 h2 { margin-top: 2em; }
@@ -221,6 +237,12 @@ figcaption { margin-top: 0.5em; font-style: italic; }
 table { border-collapse: collapse; margin: 1em 0; }
 td, th { border: 1px solid #ccc; padding: 0.5em; }
 '''
+
+    # Append custom CSS if provided
+    if custom_css_content:
+        css += '\n\n/* Custom styles */\n'
+        css += custom_css_content
+
     return css
 
 

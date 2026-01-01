@@ -10,7 +10,7 @@ import glob
 import html as html_module
 from datetime import datetime
 from typing import Any
-from lxml import etree
+from lxml import etree  # type: ignore
 
 from ..core.base_renderer import BaseRenderer, TEI_NS, EMDASH_TOKEN
 from ..core.context import RenderContext

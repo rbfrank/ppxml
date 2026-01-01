@@ -8,9 +8,9 @@ in to_html_old.py for reference.
 
 from datetime import datetime
 import os
-import glob
+import tempfile
 
-from .common import parse_tei
+from .common import parse_tei, find_css_files, read_css_files
 from .renderers.html_renderer import HTMLRenderer
 from .core.traverser import TEITraverser
 
@@ -22,30 +22,42 @@ def convert(tei_file, output_file, css_file=None):
     Args:
         tei_file: Path to TEI XML input file
         output_file: Path to HTML output file
-        css_file: Optional path to external CSS file (default: auto-detect or use embedded styles)
+        css_file: Optional path to external CSS file (default: auto-detect from css/html/)
     """
     print(f"[INFO] to_html.py run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    # Auto-detect CSS file in same directory if not specified
+    # Discover CSS files if not explicitly provided
+    temp_css_file = None
     if css_file is None:
-        input_dir = os.path.dirname(os.path.abspath(tei_file))
-        css_files = glob.glob(os.path.join(input_dir, '*.css'))
-        if css_files:
-            css_file = css_files[0]  # Use first CSS file found
-            print(f"Auto-detected CSS file: {os.path.basename(css_file)}")
+        css_paths = find_css_files(tei_file, 'html')
+        if css_paths:
+            css_content = read_css_files(css_paths)
+            # Write combined CSS to temp file for HTMLRenderer
+            temp_css = tempfile.NamedTemporaryFile(mode='w', suffix='.css',
+                                                   delete=False, encoding='utf-8')
+            temp_css.write(css_content)
+            temp_css.close()
+            temp_css_file = temp_css.name
+            css_file = temp_css_file
+            print(f"Auto-detected CSS files: {', '.join([os.path.basename(p) for p in css_paths])}")
 
-    # Parse the TEI document
-    doc = parse_tei(tei_file)
+    try:
+        # Parse the TEI document
+        doc = parse_tei(tei_file)
 
-    # Create renderer and traverser
-    renderer = HTMLRenderer(css_file=css_file)
-    traverser = TEITraverser(renderer)
+        # Create renderer and traverser
+        renderer = HTMLRenderer(css_file=css_file)
+        traverser = TEITraverser(renderer)
 
-    # Render the document
-    html = traverser.traverse_document(doc)
+        # Render the document
+        html = traverser.traverse_document(doc)
 
-    # Write output
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(html)
+        # Write output
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html)
 
-    print(f"HTML conversion complete: {output_file}")
+        print(f"HTML conversion complete: {output_file}")
+    finally:
+        # Clean up temp file if created
+        if temp_css_file and os.path.exists(temp_css_file):
+            os.unlink(temp_css_file)
