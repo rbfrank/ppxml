@@ -31,9 +31,14 @@ def convert(tei_file, output_file):
     title = get_title(doc)
 
     # Discover custom CSS files for EPUB
-    from .common import find_css_files, read_css_files
+    from .common import find_css_files, read_css_files, filter_css_for_format
     css_paths = find_css_files(tei_file, 'epub')
-    custom_css_content = read_css_files(css_paths) if css_paths else None
+    if css_paths:
+        raw_css_content = read_css_files(css_paths)
+        # Filter CSS for EPUB format (process @html/@epub/@both directives)
+        custom_css_content = filter_css_for_format(raw_css_content, 'epub')
+    else:
+        custom_css_content = None
 
     if css_paths:
         print(f"Auto-detected CSS files: {', '.join([os.path.basename(p) for p in css_paths])}")

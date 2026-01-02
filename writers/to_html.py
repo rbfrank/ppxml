@@ -10,7 +10,7 @@ from datetime import datetime
 import os
 import tempfile
 
-from .common import parse_tei, find_css_files, read_css_files
+from .common import parse_tei, find_css_files, read_css_files, filter_css_for_format
 from .renderers.html_renderer import HTMLRenderer
 from .core.traverser import TEITraverser
 
@@ -31,7 +31,9 @@ def convert(tei_file, output_file, css_file=None):
     if css_file is None:
         css_paths = find_css_files(tei_file, 'html')
         if css_paths:
-            css_content = read_css_files(css_paths)
+            raw_css_content = read_css_files(css_paths)
+            # Filter CSS for HTML format (process @html/@epub/@both directives)
+            css_content = filter_css_for_format(raw_css_content, 'html')
             # Write combined CSS to temp file for HTMLRenderer
             temp_css = tempfile.NamedTemporaryFile(mode='w', suffix='.css',
                                                    delete=False, encoding='utf-8')
