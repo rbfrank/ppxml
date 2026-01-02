@@ -148,6 +148,11 @@ class HTMLRenderer(BaseRenderer):
             '    .milestone { text-align: center; margin: 2em 0; }',
             '    .milestone.stars::before { content: "*       *       *       *       *"; white-space: pre; }',
             '    .milestone.space { height: 2em; }',
+            '    .milestone[class*="space"] { height: 2em; }',
+            '    .milestone.space2 { height: 4em; }',
+            '    .milestone.space3 { height: 6em; }',
+            '    .milestone.space4 { height: 8em; }',
+            '    .milestone.space5 { height: 10em; }',
             '    table { border-collapse: collapse; margin: 1em 0; }',
             '    td, th { border: 1px solid #ccc; padding: 0.5em; }',
         ]

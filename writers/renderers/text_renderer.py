@@ -469,9 +469,19 @@ class TextRenderer(BaseRenderer):
             stars = '*       *       *       *       *'
             padding = (self.line_width - len(stars)) // 2
             return [' ' * padding + stars, '']
+        elif rend.startswith('space'):
+            # Extract number from space, space2, space3, etc.
+            # Default to 1 blank line for 'space', or parse the number
+            import re
+            match = re.match(r'space(\d+)?', rend)
+            if match and match.group(1):
+                num_lines = int(match.group(1))
+            else:
+                num_lines = 1
+            return [''] * num_lines
         else:
-            # Just blank lines for other types
-            return ['', '']
+            # Unknown milestone type - single blank line
+            return ['']
 
     def render_signed(self, elem: etree._Element, context: RenderContext,
                      traverser: TEITraverser) -> List[str]:
