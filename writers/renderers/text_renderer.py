@@ -322,7 +322,8 @@ class TextRenderer(BaseRenderer):
                 line_rends.append(line_rend)
 
                 # Apply individual line rendering
-                if line_rend == 'center':
+                # Check if 'center' is in the rend attribute (may have multiple classes)
+                if 'center' in line_rend.split():
                     padding = (self.line_width - self._visual_length(line_text)) // 2
                     line_text = ' ' * padding + line_text
                 elif line_rend == 'indent':
@@ -343,7 +344,7 @@ class TextRenderer(BaseRenderer):
         else:
             # Add base indentation for non-centered stanzas
             for i, line_text in enumerate(line_texts):
-                if i < len(line_rends) and line_rends[i] == 'center':
+                if i < len(line_rends) and 'center' in line_rends[i].split():
                     # Already centered
                     stanza_lines.append(line_text)
                 else:
@@ -355,7 +356,7 @@ class TextRenderer(BaseRenderer):
     def _format_verse_line(self, line_text: str, line_rend: str,
                           poem_rend: str, context: RenderContext) -> str:
         """Format a single line of verse."""
-        if line_rend == 'center':
+        if 'center' in line_rend.split():
             padding = (self.line_width - self._visual_length(line_text)) // 2
             return ' ' * padding + line_text
         elif line_rend == 'indent':
