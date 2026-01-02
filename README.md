@@ -83,47 +83,95 @@ of cloning the repository.
 
 ## CSS styling
 
-ppxml supports custom CSS for both HTML and EPUB outputs using a directory-based structure.
+ppxml supports custom CSS for both HTML and EPUB outputs using a unified CSS system with conditional directives.
 
-### format-specific CSS directories
+### unified CSS with conditional rules
 
-Create separate CSS files for HTML and EPUB formats in your project directory:
+Place CSS file(s) next to your XML file and use comment directives to specify format-specific rules:
+
+```
+project/
+├── book.xml
+└── style.css      # Single CSS file with conditional directives
+```
+
+**Conditional CSS syntax:**
+
+```css
+/* Shared styles (default - applies to both formats) */
+body {
+  font-family: serif;
+  line-height: 1.4;
+}
+
+/* @html */
+/* HTML-specific styles */
+body {
+  max-width: 40em;
+  margin: 2em auto;
+  background-color: #fafafa;
+}
+
+/* @epub */
+/* EPUB-specific styles */
+body {
+  margin: 0 5%;
+}
+
+/* @both */
+/* Back to shared styles */
+p {
+  text-indent: 1.2em;
+}
+```
+
+**Directives:**
+- `/* @html */` - Following rules apply only to HTML output
+- `/* @epub */` - Following rules apply only to EPUB output
+- `/* @both */` - Following rules apply to both formats (default)
+
+Directives apply to all CSS rules that follow until the next directive.
+
+### CSS file discovery
+
+ppxml looks for CSS files in this priority order:
+
+1. **Co-located files**: `*.css` in the same directory as your XML file
+2. **Shared directory**: `css/*.css` subdirectory
+
+The first non-empty location is used. Files are concatenated in alphabetical order.
+
+### multiple CSS files
+
+Use numbered prefixes to control load order:
+
+```
+project/
+├── book.xml
+├── 01-base.css
+├── 02-layout.css
+└── 03-theme.css
+```
+
+Or organize in a subdirectory:
 
 ```
 project/
 ├── book.xml
 └── css/
-    ├── html/
-    │   └── custom.css    # HTML-specific styles
-    └── epub/
-        └── custom.css    # EPUB-specific styles
+    ├── 01-base.css
+    ├── 02-layout.css
+    └── 03-theme.css
 ```
 
-### multiple CSS files
-
-You can use multiple CSS files in each directory. They will be concatenated in **alphabetical order**:
-
-```
-project/
-└── css/
-    ├── html/
-    │   ├── 01-base.css
-    │   ├── 02-layout.css
-    │   └── 03-theme.css
-    └── epub/
-        └── styles.css
-```
+All files can use conditional directives (`/* @html */`, `/* @epub */`, `/* @both */`).
 
 ### CSS behavior
 
-- **HTML**: Custom CSS is appended to default styles and embedded in the HTML output
-- **EPUB**: Custom CSS is appended to default styles in the EPUB's `styles.css` file
-- **Discovery**: CSS files must be in `css/html/` or `css/epub/` directories relative to your XML file
-- **Cascading**: Custom CSS rules override default styles due to CSS cascade order
-
-### examples
-
-Both example projects (`emmylou/` and `firebrand/`) include CSS files in the new directory structure that demonstrate custom styling.
+- **HTML**: CSS is filtered for `@html` and `@both` rules, then embedded in `<style>` tags
+- **EPUB**: CSS is filtered for `@epub` and `@both` rules, then written to `styles.css`
+- **Cascading**: Custom CSS rules override default styles
+- **Format-specific**: Use directives to handle differences between HTML and EPUB rendering
 
 ## supported output formats
 

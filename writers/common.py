@@ -65,34 +65,21 @@ def find_css_files(xml_file, format_type):
     """
     Find CSS files for the specified output format.
 
-    Discovery priority:
-    1. Unified CSS files (co-located or css/ directory)
-    2. Format-specific directory: css/{format_type}/ (legacy)
+    Looks for CSS files in priority order:
+    1. Co-located: *.css files in same directory as XML file
+    2. Shared css/ directory: css/*.css files
 
-    Unified CSS files may contain @html/@epub/@both directives.
-    Format-specific directories are for backward compatibility only.
+    CSS files may contain @html/@epub/@both directives to specify
+    format-specific rules.
 
     Args:
         xml_file: Path to source XML file
-        format_type: 'html' or 'epub'
+        format_type: 'html' or 'epub' (used for filtering, not discovery)
 
     Returns:
         List of CSS file paths in alphabetical order (empty if none found)
     """
-    # Try unified discovery first
-    unified_files = find_css_files_unified(xml_file)
-    if unified_files:
-        return unified_files
-
-    # Fall back to legacy format-specific directory
-    xml_dir = os.path.dirname(os.path.abspath(xml_file))
-    format_css_dir = os.path.join(xml_dir, 'css', format_type)
-
-    if os.path.isdir(format_css_dir):
-        css_files = sorted(glob.glob(os.path.join(format_css_dir, '*.css')))
-        return css_files
-
-    return []
+    return find_css_files_unified(xml_file)
 
 def read_css_files(css_paths):
     """
@@ -170,15 +157,12 @@ def filter_css_for_format(css_content, format_type):
 
 def find_css_files_unified(xml_file):
     """
-    Find CSS files using unified discovery (no format parameter).
+    Find CSS files using unified discovery.
 
     Priority (returns first non-empty):
     1. Co-located: *.css in same directory as XML file
-    2. Shared: css/*.css subdirectory
+    2. Shared css/ directory: css/*.css subdirectory
     3. None found: return empty list
-
-    Note: Does NOT check css/html/ or css/epub/ (legacy paths).
-    Use find_css_files() for full backward compatibility.
 
     Args:
         xml_file: Path to source XML file
