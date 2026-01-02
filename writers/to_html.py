@@ -24,8 +24,6 @@ def convert(tei_file, output_file, css_file=None):
         output_file: Path to HTML output file
         css_file: Optional path to external CSS file (default: auto-detect from css/html/)
     """
-    print(f"[INFO] to_html.py run at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
     # Discover CSS files if not explicitly provided
     temp_css_file = None
     if css_file is None:
