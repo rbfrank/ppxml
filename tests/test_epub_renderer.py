@@ -331,3 +331,71 @@ class TestEPUBRenderer:
         result = self.renderer.render_chapter(elem, 'Book Title')
 
         assert '<div class="signature">Author</div>' in result
+
+class TestMilestoneFormatSpecific:
+    """Tests for format-specific milestone rendering with @rend-epub attribute."""
+
+    def setup_method(self):
+        """Set up test fixtures."""
+        self.renderer = EPUBRenderer()
+        self.context = RenderContext(xhtml=True)
+        self.traverser = TEITraverser(self.renderer)
+
+    def test_milestone_suppression_with_rend_epub_none(self):
+        """Test that milestone with rend-epub='none' is suppressed."""
+        xml = '<milestone xmlns="http://www.tei-c.org/ns/1.0" rend="space" rend-epub="none"/>'
+        elem = etree.fromstring(xml)
+
+        result = self.renderer.render_milestone(elem, self.context, self.traverser)
+
+        assert result == '', "Milestone with rend-epub='none' should produce empty string"
+
+    def test_milestone_stars_suppression_with_rend_epub_none(self):
+        """Test that stars milestone with rend-epub='none' is suppressed."""
+        xml = '<milestone xmlns="http://www.tei-c.org/ns/1.0" rend="stars" rend-epub="none"/>'
+        elem = etree.fromstring(xml)
+
+        result = self.renderer.render_milestone(elem, self.context, self.traverser)
+
+        assert result == '', "Milestone with rend-epub='none' should produce empty string regardless of rend value"
+
+    def test_milestone_normal_rendering_in_epub(self):
+        """Test that milestone without rend-epub renders normally."""
+        xml = '<milestone xmlns="http://www.tei-c.org/ns/1.0" rend="stars"/>'
+        elem = etree.fromstring(xml)
+
+        result = self.renderer.render_milestone(elem, self.context, self.traverser)
+
+        assert '<div class="milestone stars"' in result
+        assert '</div>' in result
+
+    def test_milestone_space_normal_rendering(self):
+        """Test that space milestone without rend-epub renders normally."""
+        xml = '<milestone xmlns="http://www.tei-c.org/ns/1.0" rend="space"/>'
+        elem = etree.fromstring(xml)
+
+        result = self.renderer.render_milestone(elem, self.context, self.traverser)
+
+        assert '<div class="milestone space"' in result
+        assert '</div>' in result
+
+    def test_milestone_with_rend_epub_other_value(self):
+        """Test that rend-epub with value other than 'none' still renders (currently uses standard rend)."""
+        xml = '<milestone xmlns="http://www.tei-c.org/ns/1.0" rend="space" rend-epub="space2"/>'
+        elem = etree.fromstring(xml)
+
+        result = self.renderer.render_milestone(elem, self.context, self.traverser)
+
+        # Current implementation only handles 'none' case, so this should render normally
+        # using the standard rend attribute
+        assert '<div class="milestone' in result
+        assert '</div>' in result
+
+    def test_milestone_space2_suppression(self):
+        """Test that space2 milestone can be suppressed with rend-epub='none'."""
+        xml = '<milestone xmlns="http://www.tei-c.org/ns/1.0" rend="space2" rend-epub="none"/>'
+        elem = etree.fromstring(xml)
+
+        result = self.renderer.render_milestone(elem, self.context, self.traverser)
+
+        assert result == '', "Any milestone with rend-epub='none' should be suppressed"

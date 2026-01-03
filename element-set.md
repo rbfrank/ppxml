@@ -74,6 +74,10 @@
 - `<milestone>` - Section break or thought break
   - Use `@rend="stars"` for asterisk separator: `<milestone rend="stars"/>`
   - Use `@rend="space"` for blank space separator: `<milestone rend="space"/>`
+  - Use `@rend="space2"`, `@rend="space3"`, etc. for larger vertical spacing
+  - **Format-specific rendering**: Use `@rend-epub="none"` to suppress milestone in EPUB output only
+    - Example: `<milestone rend="space" rend-epub="none"/>` renders spacing in HTML/text but not in EPUB
+    - Example: `<milestone rend="stars" rend-epub="none"/>` renders asterisks in HTML/text but not in EPUB
 
 ### Figures/Illustrations
 - `<figure>` - Container for illustrations

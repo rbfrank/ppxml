@@ -166,3 +166,30 @@ class EPUBRenderer(HTMLRenderer):
         parts.append('</html>')
 
         return '\n'.join(parts)
+
+    def render_milestone(self, elem: etree._Element, context: RenderContext,
+                        traverser: TEITraverser) -> str:
+        """
+        Render a milestone element with EPUB-specific handling.
+
+        Checks for @rend-epub attribute first. If set to 'none',
+        suppresses the milestone entirely. Otherwise delegates to
+        parent HTMLRenderer implementation.
+
+        Args:
+            elem: The milestone element
+            context: Current rendering context
+            traverser: Traverser instance for recursive calls
+
+        Returns:
+            Rendered milestone HTML or empty string if suppressed
+        """
+        # Check for EPUB-specific rend override
+        epub_rend = self.get_format_rend(elem, 'epub')
+
+        if epub_rend == 'none':
+            # Suppress milestone in EPUB output
+            return ''
+
+        # Otherwise use standard HTML rendering
+        return super().render_milestone(elem, context, traverser)

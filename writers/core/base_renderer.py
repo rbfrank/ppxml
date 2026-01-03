@@ -6,7 +6,7 @@ It also provides common utility methods that all renderers can use.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, List, Set, Tuple, TYPE_CHECKING
+from typing import Any, List, Optional, Set, Tuple, TYPE_CHECKING
 from lxml import etree
 
 if TYPE_CHECKING:
@@ -137,6 +137,29 @@ class BaseRenderer(ABC):
             Value of rend attribute or default
         """
         return elem.get('rend', default)
+
+    def get_format_rend(self, elem: etree._Element, format_name: str,
+                       default: Optional[str] = None) -> Optional[str]:
+        """
+        Get format-specific rend attribute.
+
+        Checks for @rend-{format} attribute (e.g., @rend-epub, @rend-html).
+        If found, returns its value. Otherwise returns default.
+
+        This allows conditional rendering based on output format. For example:
+        <milestone rend="space" rend-epub="none"/> will render spacing in
+        HTML/text but be suppressed in EPUB.
+
+        Args:
+            elem: The XML element
+            format_name: Format identifier ('epub', 'html', 'text')
+            default: Value to return if format-specific attribute not found
+
+        Returns:
+            Format-specific rend value or default
+        """
+        format_attr = f'rend-{format_name}'
+        return elem.get(format_attr, default)
 
     def strip_namespace(self, tag: str) -> str:
         """
