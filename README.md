@@ -173,6 +173,68 @@ All files can use conditional directives (`/* @html */`, `/* @epub */`, `/* @bot
 - **Cascading**: Custom CSS rules override default styles
 - **Format-specific**: Use directives to handle differences between HTML and EPUB rendering
 
+## project structure for EPUB generation
+
+For EPUB output to work correctly with all features (CSS, images), organize your files like this:
+
+```
+project/
+├── book.xml           # Your TEI XML source file
+├── style.css          # Custom CSS (optional but recommended)
+└── images/            # Images directory (if your book has images)
+    ├── cover.jpg
+    ├── illus-01.jpg
+    └── illus-02.jpg
+```
+
+**Important notes:**
+
+- **CSS files** must be in the same directory as your XML file (or in a `css/` subdirectory)
+- **Images directory** must be in the same directory as your XML file
+- **Image paths** in your XML should match the directory structure (e.g., `<graphic url="images/cover.jpg"/>`)
+- When generating EPUB, ppxml will automatically detect and include CSS files and copy images into the EPUB package
+
+**Example:**
+
+```bash
+cd ~/my-book
+ls
+# book.xml  style.css  images/
+
+python3 ~/ppxml/ppxml.py book.xml book.epub
+# Auto-detected CSS files: style.css
+# EPUB conversion complete: book.epub
+```
+
+The resulting EPUB will contain:
+- All CSS styling from `style.css`
+- All images from the `images/` directory
+- Proper XHTML chapters with CSS and image links
+
+## format-specific rendering
+
+Some elements support format-specific rendering using special attributes. This allows you to customize output for different formats (HTML, EPUB, text).
+
+### milestone elements
+
+Milestones (`<milestone>`) support the `@rend-epub` attribute to control EPUB-specific rendering:
+
+```xml
+<!-- Renders spacing in HTML/text, but nothing in EPUB -->
+<milestone rend="space" rend-epub="none"/>
+
+<!-- Renders stars in HTML/text, but nothing in EPUB -->
+<milestone rend="stars" rend-epub="none"/>
+```
+
+**Why use this?** EPUB readers have built-in pagination and page breaks. Extra spacing that's needed in continuous HTML or text formats may be unnecessary or disruptive in EPUB.
+
+**Supported values:**
+- `rend-epub="none"` - Suppresses the milestone entirely in EPUB output
+- Without `rend-epub` attribute - Renders normally in all formats
+
+See `element-set.md` for complete documentation on milestone elements.
+
 ## supported output formats
 
 - **HTML** - Web pages with optional CSS styling
