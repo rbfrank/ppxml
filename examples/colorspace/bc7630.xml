@@ -32,7 +32,7 @@
 
 <body>
 
-<milestone rend='space2'/>
+<milestone rend='space2' rend-epub='none'/>
 
 <quote>
 
@@ -68,7 +68,7 @@ writer of no mean excellence.</p>
 
 </quote>
 
-<milestone rend='space2'/>
+<milestone rend='stars' rend-epub='none'/>
 
 <lg>
 <l rend='center lineabove'>THE COLOR OF SPACE</l>
@@ -113,9 +113,9 @@ scientists, while attempting to disprove the Langmuir theory of the
 construction of the atom, managed, by the use of terrific pressure, to
 combine helium and fluorine. As you know, helium has never before been
 combined with any element. The result was a dark green solid that was
-absolutely weightless. _And further investigation showed that an
+absolutely weightless. <emph>And further investigation showed that an
 electric current passed through it caused an absolute negation of
-gravity._</p>
+gravity.</emph></p>
 
 <p>“Armed with this great weapon, our government began the construction
 of three great ships, designed to fly through the atmosphere or, if
@@ -252,12 +252,15 @@ find a city street beyond that door.”</p>
 </body>
 
 <back>
-  <milestone rend='space'/>
-  <div type="tn">
-    <p>[Transcriber’s note: This story appeared in the March 1930 issue
-    of <title>Science Wonder Stories</title> magazine.]</p>
+  <div>
+    <milestone rend='space' rend-epub='none'/>
+    <div type="tn">
+      <p>Transcriber's note: This story appeared in the March 1930 issue
+      of <title>Science Wonder Stories</title> magazine.</p>
+    </div>
   </div>
 </back>
+
 
 </text>
 </TEI>
