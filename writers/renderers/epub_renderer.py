@@ -108,3 +108,61 @@ class EPUBRenderer(HTMLRenderer):
         parts.append('</html>')
 
         return '\n'.join(parts)
+
+    def render_section(self, section: etree._Element, book_title: str,
+                      id_map: Optional[Dict[str, str]] = None) -> str:
+        """
+        Render an entire section (body/front/back) as a complete XHTML document.
+        Used when the section has no div children.
+
+        Args:
+            section: The section element (body/front/back) to render
+            book_title: Book title for the page title
+            id_map: Optional mapping of xml:id to filename for cross-references
+
+        Returns:
+            Complete XHTML document as string
+        """
+        # Create context with id_map
+        context = RenderContext(
+            parent_tag='body',
+            xhtml=True,
+            id_map=id_map or {}
+        )
+
+        # Create traverser
+        from ..core.traverser import TEITraverser
+        traverser = TEITraverser(self)
+
+        # Start XHTML document
+        parts = []
+        parts.append('<?xml version="1.0" encoding="UTF-8"?>')
+        parts.append('<!DOCTYPE html>')
+        parts.append('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">')
+        parts.append('<head>')
+        parts.append(f'  <title>{html.escape(book_title)}</title>')
+        parts.append('  <link rel="stylesheet" type="text/css" href="styles.css"/>')
+        parts.append('</head>')
+        parts.append('<body>')
+
+        # Render all child elements
+        section_tag = self.strip_namespace(section.tag)
+        for elem in section:
+            if not isinstance(elem.tag, str):
+                continue
+
+            # Render element with context
+            child_context = context.with_parent(section_tag)
+            result = traverser.traverse_element(elem, child_context)
+
+            if result:
+                if isinstance(result, list):
+                    parts.extend(result)
+                else:
+                    parts.append(result)
+
+        # Close XHTML document
+        parts.append('</body>')
+        parts.append('</html>')
+
+        return '\n'.join(parts)

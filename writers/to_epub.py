@@ -100,13 +100,22 @@ def convert(tei_file, output_file):
         # Process body chapters
         body = doc.find('.//tei:body', TEI_NS)
         if body is not None:
-            for i, div in enumerate(body.findall('tei:div', TEI_NS)):
-                filename = f'chapter{i+1}.xhtml'
-                chapter_title = get_div_title(div)
-                create_chapter_file(oebps, filename, div, title, renderer, id_map, image_map)
-                chapters.append({'filename': filename, 'title': chapter_title or f'Chapter {i+1}'})
-                if chapter_title:
-                    toc_entries.append({'filename': filename, 'title': chapter_title})
+            body_divs = body.findall('tei:div', TEI_NS)
+            if body_divs:
+                # Body has divisions - process each as a chapter
+                for i, div in enumerate(body_divs):
+                    filename = f'chapter{i+1}.xhtml'
+                    chapter_title = get_div_title(div)
+                    create_chapter_file(oebps, filename, div, title, renderer, id_map, image_map)
+                    chapters.append({'filename': filename, 'title': chapter_title or f'Chapter {i+1}'})
+                    if chapter_title:
+                        toc_entries.append({'filename': filename, 'title': chapter_title})
+            else:
+                # Body has no divisions - treat entire body as single chapter
+                filename = 'chapter1.xhtml'
+                create_section_file(oebps, filename, body, title, renderer, id_map, image_map)
+                chapters.append({'filename': filename, 'title': title})
+                toc_entries.append({'filename': filename, 'title': title})
 
         # Process back matter
         back = doc.find('.//tei:back', TEI_NS)
@@ -159,9 +168,16 @@ def build_id_mapping(doc):
     # Process body chapters
     body = doc.find('.//tei:body', TEI_NS)
     if body is not None:
-        for i, div in enumerate(body.findall('tei:div', TEI_NS)):
-            filename = f'chapter{i+1}.xhtml'
-            collect_ids_from_div(div, filename, id_map)
+        body_divs = body.findall('tei:div', TEI_NS)
+        if body_divs:
+            # Body has divisions
+            for i, div in enumerate(body_divs):
+                filename = f'chapter{i+1}.xhtml'
+                collect_ids_from_div(div, filename, id_map)
+        else:
+            # Body has no divisions - collect IDs from entire body
+            filename = 'chapter1.xhtml'
+            collect_ids_from_div(body, filename, id_map)
 
     # Process back matter
     back = doc.find('.//tei:back', TEI_NS)
@@ -274,6 +290,25 @@ def create_chapter_file(oebps, filename, div, book_title, renderer, id_map, imag
     # Write chapter file
     with open(os.path.join(oebps, filename), 'w', encoding='utf-8') as f:
         f.write(chapter_html)
+
+
+def create_section_file(oebps, filename, section, book_title, renderer, id_map, image_map):
+    """Create an XHTML file from an entire section (body/front/back) without divs."""
+    # Render section using EPUBRenderer
+    section_html = renderer.render_section(section, book_title, id_map)
+
+    # Replace image src paths if needed
+    if image_map:
+        import re
+        def replace_img_src(match):
+            src = match.group(2)
+            new_src = image_map.get(src, src)
+            return match.group(1) + new_src + match.group(3)
+        section_html = re.sub(r'(<img[^>]*src=")([^"]+)(")', replace_img_src, section_html)
+
+    # Write section file
+    with open(os.path.join(oebps, filename), 'w', encoding='utf-8') as f:
+        f.write(section_html)
 
 
 def create_nav_doc(oebps, title, toc_entries):
